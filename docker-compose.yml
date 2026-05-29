@@ -1,0 +1,28 @@
+# RadarAuto — Docker Compose dev
+#
+# Sobe Postgres local pra desenvolvimento.
+# Não usado em staging/production (essas usam serviço gerenciado).
+#
+# Uso: docker compose up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: radar-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: radarauto
+      POSTGRES_PASSWORD: radarauto
+      POSTGRES_DB: radarauto
+    ports:
+      - "5432:5432"
+    volumes:
+      - radar_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U radarauto"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  radar_pg_data:

@@ -1,0 +1,68 @@
+/**
+ * @radar/ui — global styles
+ *
+ * CSS Variables do design system, importadas pelos apps web.
+ * Cores definidas via canal RGB pra suportar opacity via Tailwind.
+ *
+ * O tema primary é dinâmico (ThemePicker no protótipo). Pode ser
+ * sobrescrito por JS via document.documentElement.style.setProperty.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+:root {
+  /* Backgrounds */
+  --bg: 246 248 251;
+  --bg-2: 238 242 247;
+  --card: 255 255 255;
+  --border: 226 232 240;
+
+  /* Text */
+  --text: 15 23 42;
+  --muted: 100 116 139;
+
+  /* Brand (themeable) */
+  --primary: 37 99 235;
+  --primary-hover: 29 78 216;
+
+  /* Semantic */
+  --success: 16 185 129;
+  --warning: 245 158 11;
+  --danger: 239 68 68;
+  --trending: 255 107 0;
+
+  /* Tints (rgba alpha pré-aplicado, usado em backgrounds suaves) */
+  --primary-t: rgba(37, 99, 235, 0.1);
+  --success-t: rgba(16, 185, 129, 0.12);
+  --warning-t: rgba(245, 158, 11, 0.14);
+  --danger-t: rgba(239, 68, 68, 0.1);
+  --trending-t: rgba(255, 107, 0, 0.12);
+  --muted-t: rgba(100, 116, 139, 0.1);
+
+  /* Shadows */
+  --sh-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
+  --sh: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --sh-lg: 0 12px 32px rgba(15, 23, 42, 0.1);
+
+  /* Radius */
+  --r: 12px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+
+  /* Fonts */
+  --display: "Sora", system-ui, sans-serif;
+  --body: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+html,
+body {
+  font-family: var(--body);
+  background: rgb(var(--bg));
+  color: rgb(var(--text));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.display {
+  font-family: var(--display);
+}

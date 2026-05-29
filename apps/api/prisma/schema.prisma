@@ -1,0 +1,230 @@
+// RadarAuto — Prisma Schema
+//
+// Propósito: definição do banco PostgreSQL. Single source of truth do schema.
+// Regras: soft-delete obrigatório em entidades de domínio (Regra 29).
+// Toda mudança de schema → migration via `pnpm prisma:migrate`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================== ENUMS ==============================
+
+enum UserRole {
+  lojista
+  funcionario
+  revendedor
+  admin
+}
+
+enum Plan {
+  free
+  premium
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  past_due
+  trialing
+}
+
+enum SubscriptionCycle {
+  monthly
+  quarterly
+  yearly
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  SOLD
+  BLOCKED
+}
+
+enum LeadScore {
+  COLD
+  WARM
+  HOT
+}
+
+// ============================== MODELS ==============================
+
+model User {
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  passwordHash       String
+  name               String
+  role               UserRole            @default(revendedor)
+  plan               Plan                @default(free)
+  subscriptionStatus SubscriptionStatus?
+  subscriptionCycle  SubscriptionCycle?
+  storeId            String?
+
+  // Relacionamentos
+  store              Store?              @relation(fields: [storeId], references: [id])
+  createdListings    Listing[]           @relation("CreatedListings")
+  approvedListings   Listing[]           @relation("ApprovedListings")
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  deletedAt          DateTime?           // soft-delete (Regra 29)
+
+  @@index([email])
+  @@index([storeId])
+  @@index([deletedAt])
+}
+
+model Store {
+  id          String   @id @default(uuid())
+  name        String
+  initials    String
+  phone       String   // PII — pode evoluir pra encrypted
+  whatsapp    String?
+  email       String?
+  city        String
+  state       String
+  since       Int
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+  verified    Boolean  @default(false)
+  description String?  @db.Text
+  logoUrl     String?
+
+  users       User[]
+  vehicles    Vehicle[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@index([city, state])
+  @@index([deletedAt])
+}
+
+model Vehicle {
+  id         String   @id @default(uuid())
+  brand      String
+  model      String
+  version    String
+  year       Int
+  yearModel  Int
+  km         Int
+  fuel       String
+  transm     String
+  color      String
+  colorHex   String
+  plate      String?
+  category   String
+  price      Int      // centavos
+  fipe       Int      // centavos
+  city       String
+  state      String
+  optionals  String[] @default([])
+  obs        String?  @db.Text
+  photos     String[] @default([])
+  delivery   Boolean  @default(false)
+
+  storeId    String
+  store      Store    @relation(fields: [storeId], references: [id])
+
+  listing    Listing?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@index([storeId])
+  @@index([brand, model])
+  @@index([city, state])
+  @@index([price])
+  @@index([year])
+  @@index([deletedAt])
+}
+
+model Listing {
+  id            String        @id @default(uuid())
+  vehicleId     String        @unique
+  vehicle       Vehicle       @relation(fields: [vehicleId], references: [id])
+
+  status        ListingStatus @default(DRAFT)
+  rankingScore  Float         @default(0)
+  views         Int           @default(0)
+  favorites     Int           @default(0)
+
+  createdById   String
+  createdBy     User          @relation("CreatedListings", fields: [createdById], references: [id])
+
+  approvedById  String?
+  approvedBy    User?         @relation("ApprovedListings", fields: [approvedById], references: [id])
+  approvedAt    DateTime?
+
+  publishedAt   DateTime?
+  expiresAt     DateTime?
+  soldAt        DateTime?
+
+  leads         Lead[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?     // soft-delete obrigatório
+
+  @@index([status])
+  @@index([rankingScore])
+  @@index([createdById])
+  @@index([deletedAt])
+}
+
+model Lead {
+  id              String    @id @default(uuid())
+  listingId       String
+  listing         Listing   @relation(fields: [listingId], references: [id])
+
+  visitorId       String    // anonimizado ou userId
+  name            String    // PII — anonimizável (Regra 29)
+  score           LeadScore @default(COLD)
+  clicks          Int       @default(0)
+  favorited       Boolean   @default(false)
+  avgTimeSeconds  Int       @default(0)
+  whatsappClicked Boolean   @default(false)
+  telegramClicked Boolean   @default(false)
+  lastSeen        DateTime  @default(now())
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  @@index([listingId])
+  @@index([visitorId])
+  @@index([score])
+  @@index([lastSeen])
+  @@index([deletedAt])
+}
+
+// ============================== AUDIT LOG (Regra 29) ==============================
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  actorId       String?
+  action        String   // ex: "user.deleted", "listing.approved"
+  resource      String   // ex: "User", "Listing"
+  resourceId    String
+  before        Json?
+  after         Json?
+  correlationId String
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@index([actorId])
+  @@index([resource, resourceId])
+  @@index([createdAt])
+}
