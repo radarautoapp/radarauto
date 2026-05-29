@@ -1,20 +1,16 @@
-/**
- * Next.js config — @radar/web
- *
- * transpilePackages necessário pra consumir packages do monorepo
- * (TypeScript não-compilado).
- */
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  typedRoutes: true,
+  outputFileTracingRoot: __dirname,
   transpilePackages: ["@radar/ui", "@radar/types"],
-  experimental: {
-    typedRoutes: true,
-  },
   images: {
-    remotePatterns: [
-      // adicionar domínios de imagens reais quando integrar storage
-    ],
+    remotePatterns: [],
   },
 };
 
