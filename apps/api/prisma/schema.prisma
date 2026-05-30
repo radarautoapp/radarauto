@@ -53,12 +53,17 @@ enum VerificationChannel {
   phone
 }
 
+enum UserStatus {
+  PENDING_ACTIVATION
+  ACTIVE
+}
+
 model User {
   id                 String              @id @default(uuid())
   email              String              @unique
-  passwordHash       String
+  passwordHash       String?
   name               String
-  phone              String              @default("")
+  phone              String?
   cpf                String?             @unique
   role               UserRole            @default(revendedor)
   plan               Plan                @default(free)
@@ -67,7 +72,13 @@ model User {
   storeId            String?
   active             Boolean             @default(true)
 
+  status             UserStatus          @default(ACTIVE)
+  invitedById        String?
+
   store              Store?              @relation(fields: [storeId], references: [id])
+  invitedBy          User?               @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: SetNull)
+  invitedUsers       User[]              @relation("InvitedBy")
+  employeeInvites    EmployeeInvite[]
   createdListings    Listing[]           @relation("CreatedListings")
   approvedListings   Listing[]           @relation("ApprovedListings")
   sessions           Session[]
@@ -78,6 +89,8 @@ model User {
 
   @@index([email])
   @@index([storeId])
+  @@index([status])
+  @@index([invitedById])
   @@index([deletedAt])
 }
 
@@ -262,4 +275,19 @@ model AuditLog {
   @@index([actorId])
   @@index([resource, resourceId])
   @@index([createdAt])
+}
+
+model EmployeeInvite {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
 }

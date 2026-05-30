@@ -16,10 +16,11 @@ import type { CSSProperties } from "react";
 export interface AvatarProps {
   initials: string;
   imageUrl?: string | null;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | number;
   alt?: string;
   className?: string;
   style?: CSSProperties;
+  rounded?: "full" | "lg"; // full = circulo; lg = squircle (default)
 }
 
 const SIZE_MAP = {
@@ -36,14 +37,15 @@ export function Avatar({
   alt,
   className = "",
   style,
+  rounded = "lg",
 }: AvatarProps): JSX.Element {
-  const px = SIZE_MAP[size];
+  const px = typeof size === "number" ? size : (SIZE_MAP[size] ?? SIZE_MAP.md);
   const fontSize = Math.round(px * 0.4);
   const finalStyle: CSSProperties = {
     width: px,
     height: px,
     fontSize,
-    borderRadius: 16,
+    borderRadius: rounded === "full" ? "50%" : 16,
     overflow: "hidden",
     display: "inline-flex",
     alignItems: "center",

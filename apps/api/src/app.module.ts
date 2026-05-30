@@ -16,7 +16,9 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { CnpjModule } from "./modules/cnpj/cnpj.module";
 import { HealthModule } from "./modules/health/health.module";
 import { SessionsModule } from "./modules/sessions/sessions.module";
+import { EmailModule } from "./modules/email/email.module";
 import { StorageModule } from "./modules/storage/storage.module";
+import { EmployeesModule } from "./modules/employees/employees.module";
 import { StoresModule } from "./modules/stores/stores.module";
 import { UsersModule } from "./modules/users/users.module";
 import { VerificationModule } from "./modules/verification/verification.module";
@@ -24,6 +26,8 @@ import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
+    EmailModule,
+    EmployeesModule,
     StorageModule,
     StoresModule,
     SessionsModule,

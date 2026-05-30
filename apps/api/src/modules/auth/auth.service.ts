@@ -194,6 +194,12 @@ export class AuthService {
       });
     }
 
+    if (!user.passwordHash) {
+      throw new UnauthorizedException({
+        code: "ACCOUNT_NOT_ACTIVATED",
+        message: "Conta ainda nao foi ativada. Use o link do convite recebido por email.",
+      });
+    }
     const ok = await argon2.verify(user.passwordHash, dto.password);
     if (!ok) throw genericError;
 

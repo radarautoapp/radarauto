@@ -2,12 +2,12 @@
  * Prisma seed
  *
  * Cria 3 contas de teste idempotentes (upsert) com senhas conhecidas.
- * NUNCA roda em produção - guard duplo (NODE_ENV + env explicito).
+ * NUNCA roda em producao - guard duplo (NODE_ENV + env explicito).
  *
  * Contas:
- *   Lojista        → lojista@radarauto.test    | senha12345 | + Store associada
- *   Funcionario    → func@radarauto.test       | senha12345 | mesma Store do lojista
- *   Revendedor     → revendedor@radarauto.test | senha12345 | sem Store
+ *   Lojista        -> lojista@radarauto.test    | senha12345 | + Store associada
+ *   Funcionario    -> func@radarauto.test       | senha12345 | mesma Store do lojista
+ *   Revendedor     -> revendedor@radarauto.test | senha12345 | sem Store
  *
  * Uso:
  *   pnpm --filter @radar/api seed
@@ -16,7 +16,7 @@
  *   pnpm --filter @radar/api prisma migrate reset
  *   (vai rodar este seed automaticamente no final)
  */
-import { Plan, PrismaClient, UserRole } from "@prisma/client";
+import { PrismaClient, UserRole, UserStatus } from "@prisma/client";
 import * as argon2 from "argon2";
 
 const prisma = new PrismaClient();
@@ -60,7 +60,7 @@ async function main(): Promise<void> {
       state: "SC",
       since: 2019,
       verified: true,
-      description: "Loja de teste criada via seed. Não use em produção.",
+      description: "Loja de teste criada via seed. Nao use em producao.",
     },
   });
   console.log(`  Store ok: ${store.tradeName} (${store.cnpj})`);
@@ -73,9 +73,8 @@ async function main(): Promise<void> {
       phone: "47999990001",
       cpf: "11144477735",
       role: UserRole.lojista,
-      plan: Plan.free,
+      status: UserStatus.ACTIVE,
       storeId: store.id,
-      active: true,
     },
     create: {
       email: "lojista@radarauto.test",
@@ -84,7 +83,7 @@ async function main(): Promise<void> {
       phone: "47999990001",
       cpf: "11144477735",
       role: UserRole.lojista,
-      plan: Plan.free,
+      status: UserStatus.ACTIVE,
       storeId: store.id,
     },
   });
@@ -95,21 +94,20 @@ async function main(): Promise<void> {
     update: {
       passwordHash,
       name: "Maria Funcionaria",
-      phone: "",
+      phone: null,
       cpf: "39053344705",
       role: UserRole.funcionario,
-      plan: Plan.free,
+      status: UserStatus.ACTIVE,
       storeId: store.id,
-      active: true,
     },
     create: {
       email: "func@radarauto.test",
       passwordHash,
       name: "Maria Funcionaria",
-      phone: "",
+      phone: null,
       cpf: "39053344705",
       role: UserRole.funcionario,
-      plan: Plan.free,
+      status: UserStatus.ACTIVE,
       storeId: store.id,
     },
   });
@@ -123,9 +121,8 @@ async function main(): Promise<void> {
       phone: "47999990003",
       cpf: "52998224725",
       role: UserRole.revendedor,
-      plan: Plan.free,
+      status: UserStatus.ACTIVE,
       storeId: null,
-      active: true,
     },
     create: {
       email: "revendedor@radarauto.test",
@@ -134,7 +131,7 @@ async function main(): Promise<void> {
       phone: "47999990003",
       cpf: "52998224725",
       role: UserRole.revendedor,
-      plan: Plan.free,
+      status: UserStatus.ACTIVE,
     },
   });
   console.log(`  Revendedor ok: ${revendedor.email}`);

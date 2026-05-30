@@ -1,3 +1,4 @@
 -- AlterTable: Session.lastSeenAt
--- Adiciona quando a sessao foi usada pela ultima vez (atualizado por interceptor).
-ALTER TABLE "Session" ADD COLUMN "lastSeenAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+-- NOOP: coluna ja criada na migration inicial (20260529164448).
+-- Mantemos o arquivo pra preservar o historico no Prisma.
+SELECT 1;

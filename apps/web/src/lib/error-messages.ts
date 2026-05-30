@@ -43,6 +43,16 @@ export const MESSAGES: Record<string, string> = {
   VERIFICATION_TOKEN_INVALID: "Verificação expirada. Reinicie o processo.",
   VERIFICATION_NOT_FOUND: "Código não encontrado. Peça um novo.",
 
+  // ===== Funcionarios / Convites =====
+  EMPLOYEE_NOT_FOUND: "Funcionário não encontrado.",
+  EMPLOYEE_ALREADY_ACTIVE: "Esse funcionário já ativou a conta.",
+  INVITE_NOT_FOUND: "Convite inválido ou expirado.",
+  INVITE_ALREADY_USED: "Este convite já foi usado.",
+  INVITE_EXPIRED: "Este convite expirou. Peça pra loja enviar um novo.",
+  INVALID_NAME: "Nome inválido.",
+  INVALID_PASSWORD: "Senha deve ter pelo menos 8 caracteres.",
+  EMAIL_SEND_FAILED: "Falha ao enviar email. Tente novamente em instantes.",
+
   // ===== Logo upload =====
   LOGO_NO_FILE: "Nenhum arquivo enviado.",
   LOGO_INVALID_TYPE: "Formato inválido. Use JPEG, PNG ou WebP.",

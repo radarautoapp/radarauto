@@ -59,6 +59,12 @@ export class UsersService {
   ): Promise<{ revokedSessions: number }> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
+    if (!user.passwordHash) {
+      throw new UnauthorizedException({
+        code: "INVALID_CURRENT_PASSWORD",
+        message: "Senha atual incorreta.",
+      });
+    }
     const ok = await argon2.verify(user.passwordHash, dto.currentPassword);
     if (!ok) {
       throw new UnauthorizedException({

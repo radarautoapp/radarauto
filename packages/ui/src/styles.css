@@ -439,7 +439,7 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
 @media (max-width:640px){.hide-sm{display:none;}}
 
 /* Sidebar mobile state */
-@media (max-width:1024px){
+@media (max-width:900px){
   .sb{transform:translateX(-100%);}
   .sb.open{transform:translateX(0);box-shadow:0 0 0 100vmax rgba(15,23,42,.4);}
   .main{margin-left:0;}
@@ -683,7 +683,7 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
 }
 
 .show-sm{display:none;}
-@media (max-width:1024px){.show-sm{display:grid !important;}}
+@media (max-width:900px){.show-sm{display:grid !important;}}
 .sb-backdrop{display:none;}
 @media (max-width:1024px){.sb-backdrop.open{display:block;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;animation:fadeIn .2s ease;}}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
@@ -901,4 +901,219 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
 .logo-crop-range {
   flex: 1;
   accent-color: var(--primary);
+}
+
+/* ============================================================
+   FUNCIONÁRIOS + CONVITE (Sub-fase 3.4)
+   ============================================================ */
+
+
+.employees-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.employee-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--surface, white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  position: relative;
+}
+.employee-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.employee-card-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.employee-card-email {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.employee-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.employee-card-actions {
+  position: relative;
+}
+.employee-card-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 4px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+.employee-card-menu-item {
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 6px;
+}
+.employee-card-menu-item:hover {
+  background: var(--bg-subtle);
+}
+.employee-card-menu-item.danger {
+  color: var(--danger, #dc2626);
+}
+.employee-card-menu-item.danger:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+/* ─── Convite (público) ──────────────────────────────────────── */
+
+.convite-wrap {
+  min-height: 100vh;
+  background: var(--bg-subtle, #f5f7fb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+.convite-card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  border-radius: 14px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+.convite-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.convite-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+.convite-sub {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.convite-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--bg-subtle, #f5f7fb);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.convite-success {
+  text-align: center;
+  padding: 16px 0;
+}
+.convite-success-icon {
+  display: inline-flex;
+  color: #16a34a;
+  margin-bottom: 12px;
+  animation: successPop 0.4s ease;
+}
+.convite-success h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.convite-success p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.convite-error-state {
+  text-align: center;
+  padding: 24px 0;
+}
+.convite-error-state h1 {
+  margin: 8px 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.convite-error-state p {
+  margin: 0 0 20px;
+  color: var(--text-muted);
+}
+.convite-error-icon {
+  color: var(--danger, #dc2626);
+}
+
+/* ─── Botoes de acao no EmployeeCard ─────────────────────────── */
+.action-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  transition: all 0.15s;
+}
+.action-btn:hover {
+  background: var(--bg-subtle);
+  border-color: var(--text-muted);
+}
+.action-btn-primary:hover {
+  background: var(--primary-t);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.action-btn-danger {
+  color: var(--danger, #dc2626);
+}
+.action-btn-danger:hover {
+  background: var(--danger-t, rgba(220, 38, 38, 0.08));
+  border-color: var(--danger, #dc2626);
+  color: var(--danger, #dc2626);
+}
+.employee-card-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Header da pagina /app/funcionarios */
+.employees-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
 }

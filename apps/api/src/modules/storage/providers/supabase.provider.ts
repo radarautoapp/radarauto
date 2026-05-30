@@ -21,13 +21,15 @@ export class SupabaseStorageProvider implements IStorageService {
   private readonly publicBaseUrl: string;
 
   constructor(private readonly config: ConfigService) {
-    const url = this.config.getOrThrow<string>("SUPABASE_URL");
-    const secretKey = this.config.getOrThrow<string>("SUPABASE_SECRET_KEY");
+    // Lazy: nao explode no boot se STORAGE_PROVIDER=local e vars do Supabase faltarem.
+    const url = this.config.get<string>("SUPABASE_URL");
+    const secretKey = this.config.get<string>("SUPABASE_SECRET_KEY");
     this.bucket = this.config.get<string>("SUPABASE_STORAGE_BUCKET") ?? "logos";
-    this.publicBaseUrl = `${url}/storage/v1/object/public/${this.bucket}`;
-    this.client = createClient(url, secretKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+    this.publicBaseUrl = url ? `${url}/storage/v1/object/public/${this.bucket}` : "";
+    this.client =
+      url && secretKey
+        ? createClient(url, secretKey, { auth: { persistSession: false, autoRefreshToken: false } })
+        : (null as unknown as SupabaseClient);
   }
 
   async upload(opts: UploadOptions): Promise<UploadResult> {
