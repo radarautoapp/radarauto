@@ -17,7 +17,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
-    "seed:brands": "tsx prisma/seed-brands.ts"
+    "seed:brands": "tsx prisma/seed-brands.ts",
+    "seed:locations": "tsx prisma/seed-locations.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",

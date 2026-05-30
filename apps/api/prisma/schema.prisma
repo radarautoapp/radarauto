@@ -307,3 +307,26 @@ model Brand {
   @@index([popular])
   @@index([order])
 }
+
+model State {
+  uf        String   @id
+  name      String
+  region    String
+  cities    City[]
+  createdAt DateTime @default(now())
+
+  @@index([name])
+}
+
+model City {
+  id        String   @id @default(uuid())
+  ibgeCode  String   @unique
+  name      String
+  stateUf   String
+  state     State    @relation(fields: [stateUf], references: [uf])
+  createdAt DateTime @default(now())
+
+  @@index([stateUf])
+  @@index([name])
+  @@index([stateUf, name])
+}

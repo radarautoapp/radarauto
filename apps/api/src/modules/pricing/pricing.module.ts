@@ -1,0 +1,18 @@
+/**
+ * PricingModule
+ *
+ * Engine de Preço Recomendado RadarAuto.
+ */
+import { Module } from "@nestjs/common";
+
+import { PrismaModule } from "../../prisma/prisma.module";
+import { PricingController } from "./pricing.controller";
+import { PricingService } from "./pricing.service";
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [PricingController],
+  providers: [PricingService],
+  exports: [PricingService],
+})
+export class PricingModule {}

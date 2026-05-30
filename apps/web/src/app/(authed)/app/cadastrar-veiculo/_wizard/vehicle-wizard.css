@@ -1,0 +1,383 @@
+/* ===== Wizard de veículo (carrinho na trilha) ===== */
+
+.vwz {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-bottom: 90px;
+}
+
+.vwz-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.vwz-title {
+  text-align: center;
+  margin-bottom: 4px;
+}
+.vwz-title .micro {
+  color: var(--primary);
+}
+.vwz-title h2 {
+  font-family: var(--display, inherit);
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* Trilha com carrinho */
+.vwz-track {
+  position: relative;
+  height: 30px;
+  margin: 16px 0 24px;
+  display: flex;
+  align-items: center;
+}
+.vwz-line {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--bg-2, #eef2f7);
+}
+.vwz-line span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--primary), #3b82f6);
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vwz-car {
+  position: absolute;
+  transform: translateX(-50%);
+  transition: left 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--card, #fff);
+  border-radius: 50%;
+  padding: 4px;
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--sh, 0 2px 8px rgba(15, 23, 42, 0.12));
+  z-index: 2;
+}
+.vwz-car.success {
+  color: var(--success);
+}
+.vwz-flag {
+  position: absolute;
+  right: -4px;
+  color: var(--muted);
+  background: var(--card, #fff);
+  border-radius: 50%;
+  padding: 4px;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  transition: color 0.3s;
+}
+.vwz-flag.done {
+  color: var(--success);
+  box-shadow: 0 0 0 3px var(--success-t);
+}
+
+.vwz-anim {
+  animation: vwzIn 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes vwzIn {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.vwz-foot {
+  position: fixed;
+  bottom: 0;
+  left: 264px; /* largura da sidebar no desktop */
+  right: 0;
+  z-index: 40;
+  background: var(--bg, #fff);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.05);
+  padding: 14px 32px calc(14px + env(safe-area-inset-bottom, 0px));
+}
+/* mobile: sidebar some, footer ocupa tudo */
+@media (max-width: 900px) {
+  .vwz-foot {
+    left: 0;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+}
+.vwz-foot-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.vwz-foot-inner .btn:last-child {
+  flex: 1;
+  max-width: 280px;
+}
+.vwz-foot-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.vwz-foot-inner .btn:last-child {
+  flex: 1;
+  max-width: 280px;
+}
+.vwz-foot-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.vwz-foot-inner .btn:last-child {
+  flex: 1;
+  max-width: 280px;
+}
+.vwz-foot .btn {
+  flex: 1;
+  max-width: 240px;
+}
+.vwz-foot .btn:first-child {
+  flex: 0 0 auto;
+}
+
+/* respiro pro conteudo nao ficar atras do footer sticky */
+.vwz {
+  padding-bottom: 8px;
+}
+
+/* Grid de escolhas (marca/categoria/ano) */
+.vwz-choicegrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 12px;
+}
+.vwz-choice {
+  padding: 18px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--card, #fff);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  color: var(--text);
+}
+.vwz-choice:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+.vwz-choice.on {
+  border-color: var(--primary);
+  background: var(--primary-t);
+  color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-t);
+}
+
+/* Marca com logo */
+.vwz-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 10px;
+  min-height: 96px;
+  justify-content: center;
+}
+.vwz-brand-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  display: block;
+}
+.vwz-brand-initials {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--primary-t);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+.vwz-brand-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.vwz-search {
+  margin-bottom: 16px;
+}
+
+.vwz-section-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 18px 0 10px;
+}
+
+/* fipe-box / rec-box */
+.vwz-fipe-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(120deg, var(--primary-t), transparent);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  flex-wrap: wrap;
+}
+.vwz-fipe-box .v {
+  font-family: var(--display, inherit);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  line-height: 1;
+}
+.vwz-rec-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(120deg, var(--trending-t, rgba(255,107,0,.1)), transparent);
+  border: 1px solid rgba(255, 107, 0, 0.28);
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.vwz-rec-box .v {
+  font-family: var(--display, inherit);
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: var(--trending, #ff6b00);
+  line-height: 1;
+}
+
+/* fgrid pra especificações */
+.vwz-fgrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.vwz-fgrid .full {
+  grid-column: 1 / -1;
+}
+@media (max-width: 560px) {
+  .vwz-fgrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Opcionais multi-toggle */
+.vwz-optsel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.vwz-optsel button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card, #fff);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.vwz-optsel button:hover {
+  border-color: #cbd5e1;
+}
+.vwz-optsel button.on {
+  border-color: var(--success);
+  background: var(--success-t);
+  color: var(--success);
+}
+
+/* Cores */
+.vwz-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.vwz-color {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  transition: all 0.12s;
+}
+.vwz-color.on {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-t);
+  transform: scale(1.08);
+}
+
+/* Display de ano grande */
+.vwz-year-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 20px;
+  font-family: var(--display, inherit);
+  font-weight: 700;
+  font-size: 38px;
+  letter-spacing: -0.02em;
+}
+.vwz-year-slot {
+  border-bottom: 3px solid var(--border);
+  padding: 2px 14px;
+  min-width: 110px;
+  text-align: center;
+  color: var(--border);
+}
+.vwz-year-slot.filled {
+  color: var(--text);
+  border-bottom-color: var(--primary);
+}
+
+
+/* Trilha (WizardTrack) alinhada com o card no wizard de veículo */
+.vwz .wiz-track {
+  max-width: 100%;
+  padding: 0 22px; /* mesmo recuo do .card-p */
+}
+.vwz .wiz-track-line {
+  left: 22px;
+  right: 22px;
+}
+.vwz .wiz-track-flag {
+  right: 22px;
+}

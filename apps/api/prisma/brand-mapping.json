@@ -19,7 +19,7 @@
     "fipeCode": "3",
     "name": "Alfa Romeo",
     "slug": "alfa-romeo",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 102
   },
@@ -43,7 +43,7 @@
     "fipeCode": "189",
     "name": "ASTON MARTIN",
     "slug": "aston-martin",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 105
   },
@@ -51,7 +51,7 @@
     "fipeCode": "6",
     "name": "Audi",
     "slug": "audi",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 106
   },
@@ -67,7 +67,7 @@
     "fipeCode": "7",
     "name": "BMW",
     "slug": "bmw",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 108
   },
@@ -91,7 +91,7 @@
     "fipeCode": "238",
     "name": "BYD",
     "slug": "byd",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 111
   },
@@ -107,7 +107,7 @@
     "fipeCode": "10",
     "name": "Cadillac",
     "slug": "cadillac",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 113
   },
@@ -123,7 +123,7 @@
     "fipeCode": "245",
     "name": "Caoa Chery",
     "slug": "chery",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 14
   },
@@ -131,7 +131,7 @@
     "fipeCode": "161",
     "name": "Caoa Chery/Chery",
     "slug": "chery",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 115
   },
@@ -163,7 +163,7 @@
     "fipeCode": "12",
     "name": "Chrysler",
     "slug": "chrysler",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 119
   },
@@ -171,7 +171,7 @@
     "fipeCode": "13",
     "name": "Citroën",
     "slug": "citroen",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 11
   },
@@ -195,7 +195,7 @@
     "fipeCode": "15",
     "name": "Daewoo",
     "slug": "daewoo",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 122
   },
@@ -219,7 +219,7 @@
     "fipeCode": "246",
     "name": "DFSK",
     "slug": "dfsk",
-    "format": "svg",
+    "format": null,
     "popular": false,
     "order": 125
   },
@@ -227,7 +227,7 @@
     "fipeCode": "17",
     "name": "Dodge",
     "slug": "dodge",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 126
   },
@@ -259,7 +259,7 @@
     "fipeCode": "20",
     "name": "Ferrari",
     "slug": "ferrari",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 130
   },
@@ -275,7 +275,7 @@
     "fipeCode": "21",
     "name": "Fiat",
     "slug": "fiat",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 1
   },
@@ -291,7 +291,7 @@
     "fipeCode": "22",
     "name": "Ford",
     "slug": "ford",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 9
   },
@@ -331,7 +331,7 @@
     "fipeCode": "23",
     "name": "GM - Chevrolet",
     "slug": "chevrolet",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 2
   },
@@ -339,7 +339,7 @@
     "fipeCode": "153",
     "name": "GREAT WALL",
     "slug": "great-wall",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 137
   },
@@ -379,7 +379,7 @@
     "fipeCode": "25",
     "name": "Honda",
     "slug": "honda",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 5
   },
@@ -387,7 +387,7 @@
     "fipeCode": "26",
     "name": "Hyundai",
     "slug": "hyundai",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 4
   },
@@ -395,7 +395,7 @@
     "fipeCode": "27",
     "name": "Isuzu",
     "slug": "isuzu",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 142
   },
@@ -403,7 +403,7 @@
     "fipeCode": "208",
     "name": "IVECO",
     "slug": "iveco",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 143
   },
@@ -419,7 +419,7 @@
     "fipeCode": "251",
     "name": "Jaecoo",
     "slug": "jaecoo",
-    "format": "svg",
+    "format": null,
     "popular": false,
     "order": 145
   },
@@ -427,7 +427,7 @@
     "fipeCode": "28",
     "name": "Jaguar",
     "slug": "jaguar",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 146
   },
@@ -435,7 +435,7 @@
     "fipeCode": "29",
     "name": "Jeep",
     "slug": "jeep",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 7
   },
@@ -467,7 +467,7 @@
     "fipeCode": "31",
     "name": "Kia Motors",
     "slug": "kia",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 13
   },
@@ -483,7 +483,7 @@
     "fipeCode": "171",
     "name": "LAMBORGHINI",
     "slug": "lamborghini",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 151
   },
@@ -491,7 +491,7 @@
     "fipeCode": "33",
     "name": "Land Rover",
     "slug": "land-rover",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 152
   },
@@ -507,7 +507,7 @@
     "fipeCode": "34",
     "name": "Lexus",
     "slug": "lexus",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 154
   },
@@ -531,7 +531,7 @@
     "fipeCode": "35",
     "name": "Lotus",
     "slug": "lotus",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 157
   },
@@ -547,7 +547,7 @@
     "fipeCode": "36",
     "name": "Maserati",
     "slug": "maserati",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 159
   },
@@ -563,7 +563,7 @@
     "fipeCode": "38",
     "name": "Mazda",
     "slug": "mazda",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 161
   },
@@ -571,7 +571,7 @@
     "fipeCode": "211",
     "name": "Mclaren",
     "slug": "mclaren",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 162
   },
@@ -579,7 +579,7 @@
     "fipeCode": "39",
     "name": "Mercedes-Benz",
     "slug": "mercedes-benz",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 163
   },
@@ -595,7 +595,7 @@
     "fipeCode": "167",
     "name": "MG",
     "slug": "mg",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 165
   },
@@ -603,7 +603,7 @@
     "fipeCode": "156",
     "name": "MINI",
     "slug": "mini",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 166
   },
@@ -611,7 +611,7 @@
     "fipeCode": "41",
     "name": "Mitsubishi",
     "slug": "mitsubishi",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 12
   },
@@ -635,7 +635,7 @@
     "fipeCode": "43",
     "name": "Nissan",
     "slug": "nissan",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 8
   },
@@ -643,7 +643,7 @@
     "fipeCode": "252",
     "name": "Omoda",
     "slug": "omoda",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 169
   },
@@ -651,7 +651,7 @@
     "fipeCode": "44",
     "name": "Peugeot",
     "slug": "peugeot",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 10
   },
@@ -667,7 +667,7 @@
     "fipeCode": "46",
     "name": "Pontiac",
     "slug": "pontiac",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 171
   },
@@ -675,7 +675,7 @@
     "fipeCode": "47",
     "name": "Porsche",
     "slug": "porsche",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 172
   },
@@ -699,7 +699,7 @@
     "fipeCode": "48",
     "name": "Renault",
     "slug": "renault",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 6
   },
@@ -707,7 +707,7 @@
     "fipeCode": "195",
     "name": "Rolls-Royce",
     "slug": "rolls-royce",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 175
   },
@@ -715,7 +715,7 @@
     "fipeCode": "49",
     "name": "Rover",
     "slug": "rover",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 176
   },
@@ -723,7 +723,7 @@
     "fipeCode": "50",
     "name": "Saab",
     "slug": "saab",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 177
   },
@@ -739,7 +739,7 @@
     "fipeCode": "52",
     "name": "Seat",
     "slug": "seat",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 179
   },
@@ -763,7 +763,7 @@
     "fipeCode": "157",
     "name": "smart",
     "slug": "smart",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 182
   },
@@ -771,7 +771,7 @@
     "fipeCode": "125",
     "name": "SSANGYONG",
     "slug": "ssangyong",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 183
   },
@@ -779,7 +779,7 @@
     "fipeCode": "54",
     "name": "Subaru",
     "slug": "subaru",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 184
   },
@@ -787,7 +787,7 @@
     "fipeCode": "55",
     "name": "Suzuki",
     "slug": "suzuki",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 185
   },
@@ -803,7 +803,7 @@
     "fipeCode": "56",
     "name": "Toyota",
     "slug": "toyota",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 3
   },
@@ -819,7 +819,7 @@
     "fipeCode": "58",
     "name": "Volvo",
     "slug": "volvo",
-    "format": "svg",
+    "format": "png",
     "popular": false,
     "order": 188
   },
@@ -827,7 +827,7 @@
     "fipeCode": "59",
     "name": "VW - VolksWagen",
     "slug": "volkswagen",
-    "format": "svg",
+    "format": "png",
     "popular": true,
     "order": 0
   },
