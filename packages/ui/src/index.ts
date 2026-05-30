@@ -54,3 +54,7 @@ export { PasswordInput } from "./components/PasswordInput";
 export type { PasswordInputProps } from "./components/PasswordInput";
 export { WhatsAppIcon } from "./components/icons/WhatsAppIcon";
 export type { WhatsAppIconProps } from "./components/icons/WhatsAppIcon";
+export { useWizard } from "./components/useWizard";
+export type { WizardApi, WizardDirection, UseWizardOptions } from "./components/useWizard";
+export { WizardShell } from "./components/WizardShell";
+export type { WizardShellProps } from "./components/WizardShell";

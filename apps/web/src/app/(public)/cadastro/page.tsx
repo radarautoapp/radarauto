@@ -1,8 +1,8 @@
 /**
- * /cadastro page — Orchestrator do wizard.
+ * /cadastro page — Orchestrator do wizard (refatorado pra usar useWizard + WizardShell).
  *
- * Gerencia state (form, tokens, erros), navegação (goNext/goBack), submit final.
- * Cada step é um componente isolado em ./_components/.
+ * A mecânica de navegação agora vem do useWizard. Esta página só cuida do
+ * domínio do cadastro: form, tokens, pré-checks, submit.
  *
  * Fluxos:
  *  - Revendedor (8 steps): Tipo → Nome → CPF → Email → Verif-Email → Telefone → Verif-Phone → Senha
@@ -10,15 +10,15 @@
  */
 "use client";
 
-import { AlertCircle, ArrowLeft, ArrowRight, Store, User as UserIcon } from "lucide-react";
+import { Store, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { CnpjLookupResponse } from "@radar/types";
-import { BrandLogo, Button, SuccessModal, WizardTrack } from "@radar/ui";
+import { Button, SuccessModal, useWizard, WizardShell } from "@radar/ui";
 
-import { ApiClientError } from "@/lib/api";
 import { authApi } from "@/lib/auth-api";
+import { toFriendlyError } from "@/lib/error-messages";
 import { isValidCpf, maskCpf, normalizeCpf } from "@/lib/cpf";
 import { useAuthStore } from "@/stores/auth.store";
 
@@ -57,15 +57,11 @@ export default function CadastroPage(): JSX.Element {
   const [emailVerifToken, setEmailVerifToken] = useState<string | null>(null);
   const [phoneVerifToken, setPhoneVerifToken] = useState<string | null>(null);
 
+  const [cpfStepError, setCpfStepError] = useState<string | null>(null);
   const [emailStepError, setEmailStepError] = useState<string | null>(null);
   const [phoneStepError, setPhoneStepError] = useState<string | null>(null);
-  const [cpfStepError, setCpfStepError] = useState<string | null>(null);
-  const [sendingPrecheck, setSendingPrecheck] = useState(false);
 
-  const [stepIndex, setStepIndex] = useState(0);
-  const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [pwConfirmError, setPwConfirmError] = useState<string | null>(null);
 
@@ -74,33 +70,8 @@ export default function CadastroPage(): JSX.Element {
     [accountType],
   );
 
-  const currentStep = steps[stepIndex];
-  const isLastStep = stepIndex === steps.length - 1;
-
-  /* Pré-preenche nome com sócio principal ao entrar no step "name" */
-  useEffect(() => {
-    if (currentStep === "name" && cnpjData && !userTouchedNameRef.current && !userForm.name) {
-      const principal = cnpjData.partners[0]?.name;
-      if (principal) setUserForm((p) => ({ ...p, name: titleCase(principal) }));
-    }
-  }, [currentStep, cnpjData, userForm.name]);
-
-  /* Se email muda após verificar, invalida o token + erro */
-  useEffect(() => {
-    if (emailVerifToken) setEmailVerifToken(null);
-    if (emailStepError) setEmailStepError(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userForm.email]);
-
-  /* Se phone muda após verificar, invalida o token + erro */
-  useEffect(() => {
-    if (phoneVerifToken) setPhoneVerifToken(null);
-    if (phoneStepError) setPhoneStepError(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userForm.phone]);
-
-  const isStepValid = (): boolean => {
-    switch (currentStep) {
+  const validateStep = (key: StepKey): boolean => {
+    switch (key) {
       case "type":
         return accountType !== null;
       case "cnpj":
@@ -133,65 +104,42 @@ export default function CadastroPage(): JSX.Element {
     }
   };
 
-  const goNext = async (): Promise<void> => {
-    if (!isStepValid() || submitting || sendingPrecheck) return;
-
-    if (currentStep === "cpf") {
-      setSendingPrecheck(true);
+  const onBeforeNext = async (key: StepKey): Promise<string | null> => {
+    if (key === "cpf") {
       setCpfStepError(null);
       try {
         const res = await authApi.checkCpf(userForm.cpf);
         if (!res.available) {
           setCpfStepError("Este CPF já está cadastrado.");
-          return;
+          return "Este CPF já está cadastrado.";
         }
-        setDirection("forward");
-        setStepIndex(stepIndex + 1);
+        return null;
       } catch (err) {
-        setCpfStepError(toFriendlyError(err));
-      } finally {
-        setSendingPrecheck(false);
+        const msg = toFriendlyError(err);
+        setCpfStepError(msg);
+        return msg;
       }
-      return;
     }
-
-    if (currentStep === "email") {
-      setSendingPrecheck(true);
+    if (key === "email") {
       setEmailStepError(null);
       try {
         const res = await authApi.checkEmail(userForm.email);
         if (!res.available) {
           setEmailStepError("Este email já está cadastrado.");
-          return;
+          return "Este email já está cadastrado.";
         }
-        setDirection("forward");
-        setStepIndex(stepIndex + 1);
+        return null;
       } catch (err) {
-        setEmailStepError(toFriendlyError(err));
-      } finally {
-        setSendingPrecheck(false);
+        const msg = toFriendlyError(err);
+        setEmailStepError(msg);
+        return msg;
       }
-      return;
     }
-
-    if (!isLastStep) {
-      setDirection("forward");
-      setStepIndex(stepIndex + 1);
-      return;
-    }
-    await submit();
-  };
-
-  const goBack = (): void => {
-    if (stepIndex === 0 || submitting) return;
-    setDirection("back");
-    setStepIndex(stepIndex - 1);
-    setSubmitError(null);
+    return null;
   };
 
   const submit = async (): Promise<void> => {
     if (!accountType || !emailVerifToken || !phoneVerifToken) return;
-    setSubmitError(null);
     setSubmitting(true);
     try {
       const res =
@@ -218,13 +166,41 @@ export default function CadastroPage(): JSX.Element {
       setSession(res.user, res.sessionId);
       setSuccess(true);
     } catch (err) {
-      setSubmitError(toFriendlyError(err));
+      throw new Error(toFriendlyError(err));
     } finally {
       setSubmitting(false);
     }
   };
 
-  const animClass = direction === "forward" ? "enter-right" : "enter-left";
+  const wizard = useWizard<StepKey>({
+    steps,
+    validateStep,
+    onBeforeNext,
+    onComplete: submit,
+  });
+
+  const { currentStep } = wizard;
+
+  /* Pré-preenche nome com sócio principal ao entrar no step "name" */
+  useEffect(() => {
+    if (currentStep === "name" && cnpjData && !userTouchedNameRef.current && !userForm.name) {
+      const principal = cnpjData.partners[0]?.name;
+      if (principal) setUserForm((p) => ({ ...p, name: titleCase(principal) }));
+    }
+  }, [currentStep, cnpjData, userForm.name]);
+
+  /* Invalida tokens se email/phone mudam após verificar */
+  useEffect(() => {
+    if (emailVerifToken) setEmailVerifToken(null);
+    if (emailStepError) setEmailStepError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userForm.email]);
+
+  useEffect(() => {
+    if (phoneVerifToken) setPhoneVerifToken(null);
+    if (phoneStepError) setPhoneStepError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userForm.phone]);
 
   const handleNameChange = (v: string): void => {
     userTouchedNameRef.current = true;
@@ -244,176 +220,126 @@ export default function CadastroPage(): JSX.Element {
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      void goNext();
+      void wizard.goNext();
     }
   };
 
   return (
-    <main className="wiz-shell">
-      <div className="wiz-head">
-        <div style={{ maxWidth: 680, width: "100%" }}>
-          <div className="wiz-brand-row">
-            <BrandLogo />
-            <a
-              href="/login"
-              style={{
-                color: "var(--primary)",
-                fontWeight: 600,
-                fontSize: 13.5,
-                textDecoration: "none",
-              }}
-            >
-              Já tem conta? Entrar
-            </a>
-          </div>
-          <WizardTrack
-            totalSteps={steps.length}
-            activeIndex={stepIndex}
-            icon={accountType === "lojista" ? Store : UserIcon}
+    <>
+      <WizardShell
+        wizard={wizard}
+        trackIcon={accountType === "lojista" ? Store : UserIcon}
+        headerSlot={
+          <a
+            href="/login"
+            style={{
+              color: "var(--primary)",
+              fontWeight: 600,
+              fontSize: 13.5,
+              textDecoration: "none",
+            }}
+          >
+            Já tem conta? Entrar
+          </a>
+        }
+        nextLabel={wizard.isLastStep ? "Criar conta" : "Continuar"}
+        busyLabel={submitting ? "Criando conta..." : "Validando..."}
+      >
+        {currentStep === "type" && <StepType selected={accountType} onSelect={setAccountType} />}
+        {currentStep === "cnpj" && (
+          <StepCnpj
+            cnpjInput={cnpjInput}
+            setCnpjInput={setCnpjInput}
+            cnpjData={cnpjData}
+            setCnpjData={setCnpjData}
+            cnpjLoading={cnpjLoading}
+            setCnpjLoading={setCnpjLoading}
+            cnpjError={cnpjError}
+            setCnpjError={setCnpjError}
+            disabled={wizard.busy}
           />
-        </div>
-      </div>
-
-      <div className="wiz-body">
-        <div className="wiz-card">
-          <div key={`${currentStep}-${stepIndex}`} className={`wiz-step-content ${animClass}`}>
-            {currentStep === "type" && (
-              <StepType selected={accountType} onSelect={setAccountType} />
-            )}
-            {currentStep === "cnpj" && (
-              <StepCnpj
-                cnpjInput={cnpjInput}
-                setCnpjInput={setCnpjInput}
-                cnpjData={cnpjData}
-                setCnpjData={setCnpjData}
-                cnpjLoading={cnpjLoading}
-                setCnpjLoading={setCnpjLoading}
-                cnpjError={cnpjError}
-                setCnpjError={setCnpjError}
-                disabled={submitting}
-              />
-            )}
-            {currentStep === "review" && cnpjData && <StepReview data={cnpjData} />}
-            {currentStep === "name" && (
-              <StepName
-                value={userForm.name}
-                onChange={handleNameChange}
-                onKeyDown={onInputKeyDown}
-                hint={
-                  cnpjData?.partners[0]?.name
-                    ? "Sugerimos com base no CNPJ. Pode editar."
-                    : undefined
-                }
-                disabled={submitting}
-              />
-            )}
-            {currentStep === "cpf" && (
-              <StepCpf
-                value={userForm.cpf}
-                onChange={(v) => setUserForm((p) => ({ ...p, cpf: maskCpf(v) }))}
-                onKeyDown={onInputKeyDown}
-                disabled={submitting || sendingPrecheck}
-                error={cpfStepError}
-                onValueChange={() => {
-                  if (cpfStepError) setCpfStepError(null);
-                }}
-              />
-            )}
-            {currentStep === "email" && (
-              <StepEmail
-                value={userForm.email}
-                onChange={(v) => setUserForm((p) => ({ ...p, email: v }))}
-                onKeyDown={onInputKeyDown}
-                disabled={submitting || sendingPrecheck}
-                error={emailStepError}
-              />
-            )}
-            {currentStep === "verify-email" && (
-              <StepVerifyEmail
-                email={userForm.email}
-                token={emailVerifToken}
-                onVerified={(t) => {
-                  setEmailVerifToken(t);
-                  setDirection("forward");
-                  setStepIndex((i) => i + 1);
-                }}
-              />
-            )}
-            {currentStep === "phone" && (
-              <StepPhone
-                value={userForm.phone}
-                onChange={(v) => setUserForm((p) => ({ ...p, phone: maskPhone(v) }))}
-                onKeyDown={onInputKeyDown}
-                disabled={submitting || sendingPrecheck}
-                error={phoneStepError}
-              />
-            )}
-            {currentStep === "verify-phone" && (
-              <StepVerifyPhone
-                phone={userForm.phone}
-                token={phoneVerifToken}
-                onVerified={(t) => {
-                  setPhoneVerifToken(t);
-                  setDirection("forward");
-                  setStepIndex((i) => i + 1);
-                }}
-              />
-            )}
-            {currentStep === "password" && (
-              <StepPassword
-                password={userForm.password}
-                passwordConfirm={userForm.passwordConfirm}
-                onPasswordChange={(v) => {
-                  setUserForm((p) => ({ ...p, password: v }));
-                  if (pwConfirmError) setPwConfirmError(null);
-                }}
-                onPasswordConfirmChange={(v) => {
-                  setUserForm((p) => ({ ...p, passwordConfirm: v }));
-                  if (pwConfirmError) setPwConfirmError(null);
-                }}
-                onPasswordConfirmBlur={checkPasswordsMatch}
-                pwConfirmError={pwConfirmError}
-                onKeyDown={onInputKeyDown}
-                disabled={submitting}
-              />
-            )}
-
-            {submitError && isLastStep && (
-              <div className="auth-error" role="alert" style={{ marginTop: 16 }}>
-                <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 1 }} />
-                <span>{submitError}</span>
-              </div>
-            )}
-          </div>
-
-          <div className={`wiz-foot${stepIndex === 0 ? " first" : ""}`}>
-            <Button
-              variant="ghost"
-              icon={ArrowLeft}
-              onClick={goBack}
-              disabled={submitting}
-              className="wiz-back"
-            >
-              Voltar
-            </Button>
-            <Button
-              variant="primary"
-              iconRight={isLastStep ? undefined : ArrowRight}
-              onClick={goNext}
-              disabled={!isStepValid() || sendingPrecheck}
-              loading={submitting || sendingPrecheck}
-            >
-              {submitting
-                ? "Criando conta..."
-                : sendingPrecheck
-                  ? "Validando..."
-                  : isLastStep
-                    ? "Criar conta"
-                    : "Continuar"}
-            </Button>
-          </div>
-        </div>
-      </div>
+        )}
+        {currentStep === "review" && cnpjData && <StepReview data={cnpjData} />}
+        {currentStep === "name" && (
+          <StepName
+            value={userForm.name}
+            onChange={handleNameChange}
+            onKeyDown={onInputKeyDown}
+            hint={
+              cnpjData?.partners[0]?.name ? "Sugerimos com base no CNPJ. Pode editar." : undefined
+            }
+            disabled={wizard.busy}
+          />
+        )}
+        {currentStep === "cpf" && (
+          <StepCpf
+            value={userForm.cpf}
+            onChange={(v) => setUserForm((p) => ({ ...p, cpf: maskCpf(v) }))}
+            onKeyDown={onInputKeyDown}
+            disabled={wizard.busy}
+            error={cpfStepError}
+            onValueChange={() => {
+              if (cpfStepError) setCpfStepError(null);
+            }}
+          />
+        )}
+        {currentStep === "email" && (
+          <StepEmail
+            value={userForm.email}
+            onChange={(v) => setUserForm((p) => ({ ...p, email: v }))}
+            onKeyDown={onInputKeyDown}
+            disabled={wizard.busy}
+            error={emailStepError}
+          />
+        )}
+        {currentStep === "verify-email" && (
+          <StepVerifyEmail
+            email={userForm.email}
+            token={emailVerifToken}
+            onVerified={(t) => {
+              setEmailVerifToken(t);
+              wizard.goTo(wizard.stepIndex + 1, "forward");
+            }}
+          />
+        )}
+        {currentStep === "phone" && (
+          <StepPhone
+            value={userForm.phone}
+            onChange={(v) => setUserForm((p) => ({ ...p, phone: maskPhone(v) }))}
+            onKeyDown={onInputKeyDown}
+            disabled={wizard.busy}
+            error={phoneStepError}
+          />
+        )}
+        {currentStep === "verify-phone" && (
+          <StepVerifyPhone
+            phone={userForm.phone}
+            token={phoneVerifToken}
+            onVerified={(t) => {
+              setPhoneVerifToken(t);
+              wizard.goTo(wizard.stepIndex + 1, "forward");
+            }}
+          />
+        )}
+        {currentStep === "password" && (
+          <StepPassword
+            password={userForm.password}
+            passwordConfirm={userForm.passwordConfirm}
+            onPasswordChange={(v) => {
+              setUserForm((p) => ({ ...p, password: v }));
+              if (pwConfirmError) setPwConfirmError(null);
+            }}
+            onPasswordConfirmChange={(v) => {
+              setUserForm((p) => ({ ...p, passwordConfirm: v }));
+              if (pwConfirmError) setPwConfirmError(null);
+            }}
+            onPasswordConfirmBlur={checkPasswordsMatch}
+            pwConfirmError={pwConfirmError}
+            onKeyDown={onInputKeyDown}
+            disabled={wizard.busy}
+          />
+        )}
+      </WizardShell>
 
       <SuccessModal
         open={success}
@@ -426,6 +352,6 @@ export default function CadastroPage(): JSX.Element {
         ctaLabel="Ir para o painel"
         onCta={() => router.push("/app")}
       />
-    </main>
+    </>
   );
 }
