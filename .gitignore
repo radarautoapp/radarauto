@@ -37,3 +37,20 @@ coverage
 # Misc
 .cache
 *.local
+
+/sub*/
+/leva*/
+/*-feature/
+/*-step/
+/*-revamp/
+/*-polish/
+/wizard-v*/
+/track/
+/verify/
+/seed/
+/error-arch/
+/email-verify/
+/dashboard-redirect/
+/password-toggle/
+/phase2-revamp/
+/skills-update/

@@ -1,6 +1,6 @@
 ---
 name: creating-component
-description: Use this skill whenever creating a new React component (page, layout, UI widget, form, modal, card, etc.) in the RadarAuto codebase. Covers Rule of Three for abstraction, TypeScript strict mode, file documentation, mobile-first responsiveness, accessibility, and design system integration. Triggers on any request like "crie um componente", "novo card", "vamos fazer uma tela", "preciso de um modal", or whenever code generation produces a .tsx/.jsx file in the frontend.
+description: Use this skill whenever creating a new React component (page, layout, UI widget, form, modal, card, etc.) in the RadarAuto codebase. Covers Rule of Three for abstraction, TypeScript strict mode, file documentation, mobile-first responsiveness, accessibility, and design system integration. Triggers on any request like "crie um componente", "novo card", "vamos fazer uma tela", "preciso de um modal", "tratar erro", "setError", or whenever code generation produces a .tsx/.jsx file in the frontend.
 ---
 
 # Creating a Component — RadarAuto
@@ -19,12 +19,12 @@ Se a resposta for "esse componente é único e necessário", segue pro passo 1.
 
 ## 1. Localização do arquivo
 
-| Tipo | Localização |
-|---|---|
-| Componente reutilizável (design system) | `packages/ui/src/components/<Name>/` |
-| Componente de feature específica | `apps/web/src/features/<feature>/components/<Name>/` |
-| Página/rota | `apps/web/src/app/<route>/page.tsx` (Next.js App Router) |
-| Layout compartilhado | `apps/web/src/app/<route>/layout.tsx` |
+| Tipo                                    | Localização                                              |
+| --------------------------------------- | -------------------------------------------------------- |
+| Componente reutilizável (design system) | `packages/ui/src/components/<Name>/`                     |
+| Componente de feature específica        | `apps/web/src/features/<feature>/components/<Name>/`     |
+| Página/rota                             | `apps/web/src/app/<route>/page.tsx` (Next.js App Router) |
+| Layout compartilhado                    | `apps/web/src/app/<route>/layout.tsx`                    |
 
 ## 2. Estrutura do arquivo
 
@@ -154,3 +154,62 @@ Checklist final:
 ❌ Esquecer estado de loading/erro
 ❌ Hardcoded de cores/fontes (use CSS vars do design system)
 ❌ `style={{}}` inline pra coisas que já estão em CSS
+
+## Tratamento de erros (catch/setError)
+
+Todo componente que dispara request à API trata erros por **catálogo central** — não usa `instanceof ApiClientError` direto.
+
+### Padrão único
+
+```tsx
+import { toFriendlyError } from "@/lib/error-messages";
+
+try {
+  await usersApi.updateProfile({ name });
+  onClose();
+} catch (err) {
+  setError(toFriendlyError(err));
+}
+```
+
+`toFriendlyError(err)` resolve qualquer erro (ApiClientError do backend, `TypeError` de network, `AbortError`) numa string PT-BR amigável vinda do catálogo `apps/web/src/lib/error-messages.ts`.
+
+### Quando ramificar lógica por código de erro
+
+Use `resolveError(err)` em vez de `toFriendlyError` quando precisa do `code` pra decidir UI (ex.: título diferente por tipo de erro):
+
+```tsx
+import { resolveError } from "@/lib/error-messages";
+
+const { code, message } = resolveError(err);
+const title = code === "CNPJ_NOT_FOUND" ? "CNPJ não encontrado" : "Erro na consulta";
+setCnpjError({ title, message });
+```
+
+### 401 e sessão expirada — não tratar manualmente
+
+`apiFetch` já dispara `radar:auth-expired` automaticamente quando vem 401 com code `UNAUTHORIZED`/`SESSION_INVALID`. O `useAuthExpired()` no layout autenticado captura, limpa store e redireciona pra `/login?expired=1`. **Componentes nunca precisam tratar 401**.
+
+### Visual
+
+Use a classe `.auth-error` (já no design system) — banner vermelho com border esquerda, ícone, shake horizontal ao aparecer:
+
+```tsx
+{
+  error && (
+    <div key={error} className="auth-error" role="alert">
+      <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 1 }} />
+      <span>{error}</span>
+    </div>
+  );
+}
+```
+
+`key={error}` faz reanimar shake quando o mesmo erro reaparece.
+
+### Anti-patterns
+
+- ❌ `setError(err instanceof ApiClientError ? err.message : "Erro genérico.")` — perde casos network/timeout e cria string solta fora do catálogo
+- ❌ `setError("Erro ao salvar")` — string custom escapa do catálogo, vira inconsistência
+- ❌ Tentar redirecionar pra login manualmente em 401 — auto-logout já faz, vai dar redirect duplicado
+- ❌ Mostrar `err.message` cru no UI sem passar por catálogo

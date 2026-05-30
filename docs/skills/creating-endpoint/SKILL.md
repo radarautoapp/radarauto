@@ -75,6 +75,7 @@ export class CreateVehicleDto {
 ```
 
 **Por quê DTO:**
+
 - Validação automática via `class-validator` + `ValidationPipe`
 - Documentação automática (Swagger)
 - Tipo seguro entre camadas
@@ -88,11 +89,13 @@ export class CreateVehicleDto {
 
 ```ts
 // Em ValidationPipe global (main.ts):
-app.useGlobalPipes(new ValidationPipe({
-  whitelist: true,          // remove campos não declarados no DTO
-  forbidNonWhitelisted: true, // erro se vier campo extra
-  transform: true,          // converte tipos (string → number)
-}));
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true, // remove campos não declarados no DTO
+    forbidNonWhitelisted: true, // erro se vier campo extra
+    transform: true, // converte tipos (string → number)
+  }),
+);
 ```
 
 ## 5. Autorização via Guards (Regra 10)
@@ -116,6 +119,7 @@ export class VehiclesController {
 ```
 
 **Tipos de guards comuns:**
+
 - `AuthGuard` — usuário logado
 - `RoleGuard` — role específica (lojista/funcionario/revendedor)
 - `OwnershipGuard` — recurso pertence ao user
@@ -161,6 +165,7 @@ Formato único em **toda** resposta de erro:
 ```
 
 Códigos HTTP corretos:
+
 - `400` — payload inválido (validação DTO)
 - `401` — não autenticado
 - `403` — autenticado mas sem permissão
@@ -248,7 +253,8 @@ it("rejeita criação sem auth", async () => {
 });
 
 it("rejeita criação por revendedor", async () => {
-  const res = await request(app).post("/vehicles")
+  const res = await request(app)
+    .post("/vehicles")
     .set("Authorization", `Bearer ${revendedorToken}`)
     .send(payload);
   expect(res.status).toBe(403);
@@ -294,3 +300,55 @@ E filtra em todas as queries: `WHERE deletedAt IS NULL`.
 ❌ Stack trace vazando pro client
 ❌ Query sem filtro de `deletedAt`
 ❌ `console.log` em vez de logger estruturado
+
+## Sincronizar com catálogo de erros do frontend
+
+Todo novo `code` de erro lançado no backend **DEVE** ter entrada correspondente em `apps/web/src/lib/error-messages.ts`. Sem isso, a UI cai no fallback genérico "Algo deu errado".
+
+### Convenção de codes
+
+- `SCREAMING_SNAKE_CASE`
+- Prefixado pelo domínio quando útil: `CNPJ_NOT_FOUND`, `VERIFICATION_INVALID_CODE`, `SESSION_NOT_FOUND`
+- Estável (não renomeia depois — o frontend tem dependência)
+
+### Fluxo
+
+1. **Backend lança a exception** com `{ code, message }`:
+
+```ts
+throw new ConflictException({
+  code: "CNPJ_ALREADY_EXISTS",
+  message: "Este CNPJ já está cadastrado em outra loja.",
+});
+```
+
+2. **`HttpExceptionFilter`** serializa pra `{ code, message, details? }` automático.
+
+3. **Frontend** recebe via `apiFetch` → vira `ApiClientError(code, message, status)`.
+
+4. **Adicionar entrada no catálogo** (`apps/web/src/lib/error-messages.ts`):
+
+```ts
+export const MESSAGES: Record<string, string> = {
+  // ...
+  CNPJ_ALREADY_EXISTS: "Este CNPJ já está cadastrado em outra loja.",
+};
+```
+
+A mensagem do catálogo **prevalece** sobre a do backend (consistência + i18n-ready). A do backend serve como fallback se o code for desconhecido pelo frontend.
+
+### Checklist ao criar endpoint
+
+- [ ] Cada `code` novo lançado está documentado em `error-messages.ts`
+- [ ] Mensagem amigável em PT-BR, segunda pessoa, acionável
+- [ ] Code é estável (não vai renomear)
+- [ ] `details` opcional pra dar contexto extra (não pra mensagem visível)
+
+### Anti-patterns
+
+- ❌ Lançar `throw new Error("texto cru")` — vira 500 genérico, perde rastreabilidade
+- ❌ Usar mesmo `code` pra significados diferentes (ex.: `NOT_FOUND` pra user e veículo) — prefixe (`USER_NOT_FOUND`, `VEHICLE_NOT_FOUND`)
+- ❌ Mensagem com tom técnico ("constraint violation") — sempre usuário-final
+- ❌ Esquecer de adicionar entrada no catálogo do frontend (vai cair no fallback)
+
+Ver `creating-component` pra o lado do consumidor (`toFriendlyError`, `resolveError`).
