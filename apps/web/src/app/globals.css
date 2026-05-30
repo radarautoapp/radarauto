@@ -1,8 +1,8 @@
 /**
  * Global CSS — RadarAuto Web
  *
- * Importa tokens do design system (@radar/ui) + Tailwind layers.
- * CSS vars vivem em @radar/ui/styles.css.
+ * Importa tokens + classes do design system (@radar/ui) + layers do Tailwind.
+ * Mudanças aqui afetam o app inteiro.
  */
 @import "@radar/ui/styles.css";
 

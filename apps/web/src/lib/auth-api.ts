@@ -14,6 +14,22 @@ import type {
 import { apiFetch, tokenStorage } from "./api";
 
 export const authApi = {
+  async checkEmail(email: string): Promise<{ available: boolean }> {
+    return apiFetch<{ available: boolean }>("/auth/check-email", {
+      method: "POST",
+      body: { email },
+      skipAuth: true,
+    });
+  },
+
+  async checkCpf(cpf: string): Promise<{ available: boolean }> {
+    return apiFetch<{ available: boolean }>("/auth/check-cpf", {
+      method: "POST",
+      body: { cpf },
+      skipAuth: true,
+    });
+  },
+
   async registerRevendedor(input: RegisterRevendedorRequest): Promise<AuthResponse> {
     const data = await apiFetch<AuthResponse>("/auth/register/revendedor", {
       method: "POST",

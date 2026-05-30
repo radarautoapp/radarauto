@@ -2,7 +2,7 @@
  * Root Layout — RadarAuto Web
  *
  * Propósito: layout raiz do App Router. Aplica fontes, CSS globais e providers.
- * Contexto: tudo abaixo herda Tailwind + CSS vars + TanStack Query.
+ * Estrutura: (public) pra rotas não-autenticadas, (authed) pra rotas com shell.
  */
 import type { Metadata } from "next";
 
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>
+      <body className="ra-root">
         <Providers>{children}</Providers>
       </body>
     </html>
