@@ -823,3 +823,82 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
   .session-card-revoke{padding:8px;}
   .session-foot{padding:12px 18px;}
 }
+
+/* ============================================================
+   LOGO UPLOAD (Sub-fase 3.5)
+   ============================================================ */
+.logo-card-body {
+  padding: 0 24px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.logo-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 200px;
+}
+
+@media (max-width: 640px) {
+  .logo-card-body {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .logo-card-actions {
+    width: 100%;
+  }
+}
+
+.logo-upload-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.logo-upload-empty p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.logo-upload-icon {
+  color: var(--text-muted);
+}
+
+.logo-crop-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 360px;
+  margin: 0 auto;
+  background: var(--bg-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.logo-crop-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.logo-crop-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  min-width: 48px;
+}
+
+.logo-crop-range {
+  flex: 1;
+  accent-color: var(--primary);
+}

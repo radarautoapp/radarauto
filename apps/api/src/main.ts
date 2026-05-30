@@ -8,13 +8,22 @@
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
+import { join } from "path";
 import { Logger } from "nestjs-pino";
 
 import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
+
+  // Storage local: serve arquivos em /uploads (apenas em dev com STORAGE_PROVIDER=local)
+  if ((process.env.STORAGE_PROVIDER ?? "local") === "local") {
+    app.useStaticAssets(join(process.cwd(), process.env.LOCAL_STORAGE_ROOT ?? "uploads"), {
+      prefix: "/uploads/",
+    });
+  }
   const config = app.get(ConfigService);
 
   // Logger estruturado (Pino) — Regra 31

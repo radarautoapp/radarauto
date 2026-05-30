@@ -41,3 +41,11 @@ export interface UpdateStoreRequest {
 export interface UpdateStoreResponse {
   store: PublicStore;
 }
+
+export interface UploadStoreLogoResponse {
+  store: PublicStore;
+}
+
+export interface RemoveStoreLogoResponse {
+  store: PublicStore;
+}

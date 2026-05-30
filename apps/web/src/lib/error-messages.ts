@@ -43,6 +43,14 @@ export const MESSAGES: Record<string, string> = {
   VERIFICATION_TOKEN_INVALID: "Verificação expirada. Reinicie o processo.",
   VERIFICATION_NOT_FOUND: "Código não encontrado. Peça um novo.",
 
+  // ===== Logo upload =====
+  LOGO_NO_FILE: "Nenhum arquivo enviado.",
+  LOGO_INVALID_TYPE: "Formato inválido. Use JPEG, PNG ou WebP.",
+  LOGO_TOO_LARGE: "Arquivo muito grande. Máximo 5 MB.",
+  LOGO_TOO_SMALL: "Imagem muito pequena. Mínimo 200×200 pixels.",
+  LOGO_PROCESSING_FAILED: "Não foi possível processar a imagem. Tente outra.",
+  STORAGE_UPLOAD_FAILED: "Falha no upload. Tente novamente em instantes.",
+
   // ===== Loja =====
   STORE_NOT_FOUND: "Loja não encontrada.",
   STORE_ACCESS_DENIED: "Apenas o lojista pode gerenciar a loja.",

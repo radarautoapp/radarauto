@@ -54,3 +54,6 @@ coverage
 /password-toggle/
 /phase2-revamp/
 /skills-update/
+
+# Uploads locais (dev)
+apps/api/uploads/

@@ -28,6 +28,7 @@ import { WhatsAppIcon } from "@radar/ui";
 import { toFriendlyError } from "@/lib/error-messages";
 import { storesApi } from "@/lib/stores-api";
 
+import { LogoCard } from "./LogoCard";
 import { EditStoreDescriptionModal } from "./EditStoreDescriptionModal";
 import { EditStoreEmailModal } from "./EditStoreEmailModal";
 import { EditStoreNameModal } from "./EditStoreNameModal";
@@ -111,6 +112,7 @@ export function StoreTab(): JSX.Element {
 
   return (
     <>
+      <LogoCard store={store} onUpdated={() => void load({ silent: true })} />
       <section className="cfg-card">
         <header className="cfg-card-head">
           <h2 className="cfg-card-title">Dados oficiais</h2>
