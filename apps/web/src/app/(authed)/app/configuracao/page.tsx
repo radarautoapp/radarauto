@@ -1,5 +1,7 @@
 /**
- * /app/configuracao — Lista de dados editáveis + Sessões.
+ * /app/configuracao — Perfil + Loja (lojista) + Sessões.
+ *
+ * Aba "Loja" condicional: só aparece pra user.role === 'lojista' com storeId.
  */
 "use client";
 
@@ -10,9 +12,12 @@ import {
   Phone,
   Settings as SettingsIcon,
   Shield,
+  Store as StoreIcon,
   User as UserIcon,
 } from "lucide-react";
 import { useState } from "react";
+
+import { WhatsAppIcon } from "@radar/ui";
 
 import { useAuthStore } from "@/stores/auth.store";
 
@@ -21,6 +26,7 @@ import { EditPasswordModal } from "./_components/EditPasswordModal";
 import { EditPhoneModal } from "./_components/EditPhoneModal";
 import { FieldRow } from "./_components/FieldRow";
 import { SessionsTab } from "./_components/SessionsTab";
+import { StoreTab } from "./_components/StoreTab";
 
 type Tab = "perfil" | "loja" | "sessoes";
 type EditingField = null | "name" | "phone" | "password";
@@ -49,6 +55,8 @@ export default function ConfiguracaoPage(): JSX.Element {
 
   if (!user) return <div />;
 
+  const canManageStore = user.role === "lojista" && !!user.storeId;
+
   return (
     <div className="page-wrap">
       <div className="cfg-tabs">
@@ -60,11 +68,16 @@ export default function ConfiguracaoPage(): JSX.Element {
           <UserIcon size={16} />
           Perfil
         </button>
-        <button type="button" className="cfg-tab disabled" disabled>
-          <SettingsIcon size={16} />
-          Loja
-          <span className="cfg-tab-soon">em breve</span>
-        </button>
+        {canManageStore && (
+          <button
+            type="button"
+            className={`cfg-tab${tab === "loja" ? " active" : ""}`}
+            onClick={() => setTab("loja")}
+          >
+            <StoreIcon size={16} />
+            Loja
+          </button>
+        )}
         <button
           type="button"
           className={`cfg-tab${tab === "sessoes" ? " active" : ""}`}
@@ -91,7 +104,7 @@ export default function ConfiguracaoPage(): JSX.Element {
                   onEdit={() => setEditing("name")}
                 />
                 <FieldRow
-                  icon={Phone}
+                  icon={WhatsAppIcon}
                   label="WhatsApp"
                   value={maskPhone(user.phone)}
                   onEdit={() => setEditing("phone")}
@@ -123,6 +136,7 @@ export default function ConfiguracaoPage(): JSX.Element {
           </>
         )}
 
+        {tab === "loja" && canManageStore && <StoreTab />}
         {tab === "sessoes" && <SessionsTab />}
       </div>
 

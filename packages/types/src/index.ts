@@ -18,3 +18,4 @@ export * from "./api/cnpj.js";
 export * from "./api/verification.js";
 export * from "./api/users.js";
 export * from "./api/sessions.js";
+export * from "./api/stores.js";

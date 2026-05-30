@@ -16,12 +16,14 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { CnpjModule } from "./modules/cnpj/cnpj.module";
 import { HealthModule } from "./modules/health/health.module";
 import { SessionsModule } from "./modules/sessions/sessions.module";
+import { StoresModule } from "./modules/stores/stores.module";
 import { UsersModule } from "./modules/users/users.module";
 import { VerificationModule } from "./modules/verification/verification.module";
 import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
+    StoresModule,
     SessionsModule,
     UsersModule,
     ConfigModule.forRoot({

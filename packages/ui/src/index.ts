@@ -52,3 +52,5 @@ export { Skeleton, SkeletonText } from "./components/Skeleton";
 export type { SkeletonProps } from "./components/Skeleton";
 export { PasswordInput } from "./components/PasswordInput";
 export type { PasswordInputProps } from "./components/PasswordInput";
+export { WhatsAppIcon } from "./components/icons/WhatsAppIcon";
+export type { WhatsAppIconProps } from "./components/icons/WhatsAppIcon";

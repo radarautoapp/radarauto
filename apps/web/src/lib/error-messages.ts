@@ -43,6 +43,10 @@ export const MESSAGES: Record<string, string> = {
   VERIFICATION_TOKEN_INVALID: "Verificação expirada. Reinicie o processo.",
   VERIFICATION_NOT_FOUND: "Código não encontrado. Peça um novo.",
 
+  // ===== Loja =====
+  STORE_NOT_FOUND: "Loja não encontrada.",
+  STORE_ACCESS_DENIED: "Apenas o lojista pode gerenciar a loja.",
+
   // ===== Genéricos do backend =====
   FORBIDDEN: "Você não tem permissão pra essa ação.",
   NOT_FOUND: "Não encontramos o que você procurava.",
