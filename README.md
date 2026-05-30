@@ -2,7 +2,7 @@
 
 > Plataforma premium de inteligência automotiva — marketplace + radar de oportunidades + CRM de leads.
 
-**Status**: em desenvolvimento ativo — Fase 3 (perfil + sessões ✅, loja + funcionários + logo upload em andamento).
+**Status**: em desenvolvimento ativo — Fase 3 (Configurações) ✅ completa. Próxima: Fase 4 (Catálogo + Veículos).
 
 ## Stack
 
