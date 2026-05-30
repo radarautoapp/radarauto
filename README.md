@@ -2,6 +2,8 @@
 
 > Plataforma premium de inteligência automotiva — marketplace + radar de oportunidades + CRM de leads.
 
+**Status**: em desenvolvimento ativo — Fase 3 (perfil + sessões ✅, loja + funcionários + logo upload em andamento).
+
 ## Stack
 
 - **Frontend**: Next.js 15 (App Router) + React 19 + TypeScript + Tailwind
@@ -16,19 +18,25 @@
 ```
 radarauto/
 ├── apps/
-│   ├── web/          # Next.js frontend
-│   └── api/          # NestJS backend
+│   ├── web/                        # Next.js frontend
+│   │   └── src/app/
+│   │       ├── (public)/           # /login, /cadastro
+│   │       └── (authed)/app/       # /catalogo, /meus-veiculos, /leads,
+│   │                               # /funcionarios, /planos, /configuracao
+│   └── api/                        # NestJS backend
+│       └── src/modules/            # auth, users, sessions, cnpj, cpf, verification
 ├── packages/
-│   ├── ui/                # Design system (Button, Card, etc)
-│   ├── types/             # Tipos de domínio compartilhados
-│   ├── config-eslint/     # ESLint shared
-│   ├── config-tsconfig/   # tsconfig presets
-│   └── config-tailwind/   # Tailwind preset
+│   ├── ui/                         # Design system (Button, Modal, Wizard, etc)
+│   ├── types/                      # Tipos de domínio compartilhados
+│   ├── config-eslint/              # ESLint shared
+│   ├── config-tsconfig/            # tsconfig presets
+│   └── config-tailwind/            # Tailwind preset
 ├── docs/
-│   ├── RULES.md           # 33 regras de desenvolvimento
-│   └── skills/            # 7 skills procedurais
-├── .github/workflows/     # CI
-└── docker-compose.yml     # Postgres local
+│   ├── RULES.md                    # 33 regras de desenvolvimento
+│   ├── skills/                     # 7 skills procedurais (checklist + anti-padrões)
+│   └── prototype/                  # Protótipo visual de referência
+├── .github/workflows/              # CI
+└── docker-compose.yml              # Postgres local
 ```
 
 ## Pré-requisitos
@@ -55,12 +63,27 @@ cd apps/api
 pnpm prisma:generate
 pnpm prisma:migrate
 
-# 5. Volta pra raiz e inicia tudo
+# 5. Popula com contas de teste (opcional, recomendado)
+pnpm seed
+
+# 6. Volta pra raiz e inicia tudo
 cd ../..
 pnpm dev
 ```
 
 Web em http://localhost:3000 · API em http://localhost:3001/api/v1/health
+
+## Contas de teste (seed)
+
+Após rodar `pnpm --filter @radar/api seed`, ficam disponíveis 3 contas — todas com senha **`senha12345`**:
+
+| Email                       | Role        | Detalhes                                                 |
+| --------------------------- | ----------- | -------------------------------------------------------- |
+| `lojista@radarauto.test`    | Lojista     | Tem loja associada (FlashCar Store, CNPJ 11222333000181) |
+| `func@radarauto.test`       | Funcionário | Vinculado à mesma loja do lojista                        |
+| `revendedor@radarauto.test` | Revendedor  | Comprador independente, sem loja                         |
+
+O seed é **idempotente** (pode rodar quantas vezes quiser) e **bloqueado em produção** (NODE_ENV check).
 
 ## Scripts úteis
 
@@ -77,9 +100,11 @@ pnpm clean            # remove builds + node_modules
 Scripts específicos por app:
 
 ```bash
-pnpm --filter @radar/web dev     # só o frontend
-pnpm --filter @radar/api dev     # só o backend
-pnpm --filter @radar/api prisma:studio   # GUI do banco
+pnpm --filter @radar/web dev              # só o frontend
+pnpm --filter @radar/api dev              # só o backend
+pnpm --filter @radar/api seed             # popula banco com contas de teste
+pnpm --filter @radar/api prisma:studio    # GUI do banco
+pnpm --filter @radar/api prisma:migrate   # cria nova migration
 ```
 
 ## Princípios
@@ -97,6 +122,8 @@ Tarefas comuns têm [skills procedurais](./docs/skills/) com checklist e anti-pa
 6. **Safe changes** — análise de impacto antes de modificar
 7. **TypeScript strict** — sem `any`, tipos compartilhados
 8. **LGPD** — soft-delete, sanitização de logs, auditoria
+9. **Erros amigáveis** — catálogo central em `apps/web/src/lib/error-messages.ts`,
+   todo `code` do backend tem mensagem PT-BR no frontend
 
 ## Convenções
 
@@ -104,9 +131,13 @@ Tarefas comuns têm [skills procedurais](./docs/skills/) com checklist e anti-pa
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `chore:`, etc)
 - **PRs**: descrição com checklist de impacto (skill `safe-change`)
 - **Migrations**: nomes descritivos (`add_user_role`, não `update_1`)
+- **Erros do backend**: sempre lançar com `{ code: "SCREAMING_CASE", message: "..." }`
+  e adicionar entrada no catálogo do frontend (ver skill `creating-endpoint`)
 
 ## Documentação adicional
 
 - [Regras de desenvolvimento](./docs/RULES.md)
-- [Skills](./docs/skills/README.md)
+- [Skills](./docs/skills/)
 - [Schema do banco](./apps/api/prisma/schema.prisma)
+- [Catálogo de erros amigáveis](./apps/web/src/lib/error-messages.ts)
+- [Protótipo de referência](./docs/prototype/RadarAutoApp.jsx)
