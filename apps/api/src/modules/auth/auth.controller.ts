@@ -14,6 +14,7 @@
  * Controller fino — toda regra está no AuthService (Regras 6, 7).
  */
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import { UserRole } from "@prisma/client";
 import { Request } from "express";
 
@@ -22,6 +23,8 @@ import { Public } from "../../common/decorators/public.decorator";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RoleGuard } from "../../common/guards/role.guard";
 import { AuthContext, AuthService } from "./auth.service";
+import { CheckCpfDto } from "./dto/check-cpf.dto";
+import { CheckEmailDto } from "./dto/check-email.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterFuncionarioDto } from "./dto/register-funcionario.dto";
 import { RegisterLojistaDto } from "./dto/register-lojista.dto";
@@ -60,6 +63,22 @@ export class AuthController {
     @CurrentUser() actor: AuthenticatedRequestUser,
   ): Promise<ReturnType<AuthService["registerFuncionario"]>> {
     return this.auth.registerFuncionario(dto, actor);
+  }
+
+  @Public()
+  @Post("check-email")
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  async checkEmail(@Body() dto: CheckEmailDto): Promise<{ available: boolean }> {
+    const available = await this.auth.isEmailAvailable(dto.email);
+    return { available };
+  }
+
+  @Public()
+  @Post("check-cpf")
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  async checkCpf(@Body() dto: CheckCpfDto): Promise<{ available: boolean }> {
+    const available = await this.auth.isCpfAvailable(dto.cpf);
+    return { available };
   }
 
   @Public()

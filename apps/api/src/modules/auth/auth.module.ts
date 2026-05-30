@@ -1,19 +1,16 @@
 /**
  * AuthModule
  *
- * Wiring de tudo relacionado a autenticação:
- *   - AuthService (lógica)
- *   - AuthController (endpoints)
- *   - JwtStrategy (validação de token)
- *   - JwtModule (assinatura/decode com JWT_SECRET)
- *
- * O JwtAuthGuard global é registrado no AppModule via APP_GUARD.
+ * Wiring de autenticação.
+ * Importa CnpjModule (pra validar lojista) e VerificationModule (pra consumir token).
  */
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
+import { CnpjModule } from "../cnpj/cnpj.module";
+import { VerificationModule } from "../verification/verification.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { JwtStrategy } from "./jwt.strategy";
@@ -21,6 +18,8 @@ import { JwtStrategy } from "./jwt.strategy";
 @Module({
   imports: [
     PassportModule,
+    CnpjModule,
+    VerificationModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

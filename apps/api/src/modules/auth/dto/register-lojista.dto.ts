@@ -1,9 +1,9 @@
 /**
  * RegisterLojistaDto
  *
- * Cadastro aberto de lojista. Cria User + Store atrelados na mesma transação.
+ * Exige verificação dupla (email + phone) + CPF + CNPJ válidos.
  */
-import { IsEmail, IsString, Length, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsString, Length, Matches, MaxLength, MinLength } from "class-validator";
 
 export class RegisterLojistaDto {
   @IsString()
@@ -16,26 +16,30 @@ export class RegisterLojistaDto {
   email!: string;
 
   @IsString()
+  @Matches(/^[\d\s()\-+]+$/, { message: "Telefone inválido" })
+  @MinLength(10, { message: "Telefone deve ter pelo menos 10 dígitos" })
+  @MaxLength(20)
+  phone!: string;
+
+  @IsString()
+  @Length(11, 14, { message: "CPF deve ter 11 dígitos" })
+  @Matches(/^[\d.\-]+$/, { message: "CPF inválido" })
+  cpf!: string;
+
+  @IsString()
   @MinLength(8, { message: "A senha deve ter no mínimo 8 caracteres" })
   @MaxLength(128)
   password!: string;
 
   @IsString()
-  @MinLength(2)
-  @MaxLength(120)
-  storeName!: string;
+  @Length(14, 18, { message: "CNPJ deve ter 14 dígitos" })
+  cnpj!: string;
 
   @IsString()
-  @MinLength(8)
-  @MaxLength(20)
-  storePhone!: string;
+  @MinLength(20, { message: "Token de verificação de email inválido" })
+  emailVerificationToken!: string;
 
   @IsString()
-  @MinLength(2)
-  @MaxLength(80)
-  storeCity!: string;
-
-  @IsString()
-  @Length(2, 2, { message: "UF deve ter 2 caracteres" })
-  storeState!: string;
+  @MinLength(20, { message: "Token de verificação de telefone inválido" })
+  phoneVerificationToken!: string;
 }

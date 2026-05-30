@@ -1,8 +1,8 @@
 /**
  * User domain types
  *
- * Propósito: tipos de usuário compartilhados api↔web.
- * Regras: roles definem permissões (Regra 10), plan define paywall (Regra 8).
+ * Tipos de usuário compartilhados api↔web.
+ * Roles definem permissões (Regra 10), plan define paywall (Regra 8).
  */
 
 export type UserRole = "lojista" | "funcionario" | "revendedor" | "admin";
@@ -17,11 +17,13 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  phone: string;
+  cpf: string | null;
   role: UserRole;
   plan: Plan;
   subscriptionStatus: SubscriptionStatus | null;
   subscriptionCycle: SubscriptionCycle | null;
-  storeId: string | null; // null para revendedor/admin
+  storeId: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,18 +1,8 @@
 /**
- * AuthService
+ * AuthService — Regras 6, 7.
  *
- * Propósito: regra de negócio de autenticação (Regras 6, 7).
- * Lógica pura aqui — controller só orquestra.
- *
- * Segurança:
- *   - Senha hasheada com argon2id (Regra 29)
- *   - Mensagens de erro genéricas em falha de login (não vaza se email existe)
- *   - Sessão multi-device: cada login cria nova session sem invalidar outras
- *   - Tokens com sessionId obrigatório (revogação imediata)
- *   - PII (email, senha) nunca em log (Regras 28, 29)
- *
- * Multi-sessão: login não invalida sessões existentes do mesmo user.
- * Logout específico = revoga 1 session. "Sair de todos" = revoga todas.
+ * Cadastro público: verificação dupla (email + phone) + CPF único + CNPJ p/ lojista.
+ * Todos os campos pessoais (PII) nunca em log (Regra 29).
  */
 import {
   ConflictException,
@@ -20,11 +10,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
-
 import { JwtService } from "@nestjs/jwt";
 import { Plan, User, UserRole } from "@prisma/client";
 import * as argon2 from "argon2";
 
+import { CnpjService } from "../cnpj/cnpj.service";
+import { CnpjValidator } from "../cnpj/cnpj.validator";
+import { CpfValidator } from "../cpf/cpf.validator";
+import { VerificationService } from "../verification/verification.service";
 import { PrismaService } from "../../prisma/prisma.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterFuncionarioDto } from "./dto/register-funcionario.dto";
@@ -59,10 +52,19 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly cnpjService: CnpjService,
+    private readonly verificationService: VerificationService,
   ) {}
 
   async registerRevendedor(dto: RegisterRevendedorDto, ctx: AuthContext): Promise<AuthResult> {
+    await this.verificationService.consumeToken(dto.emailVerificationToken, "email", dto.email);
+    await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
     await this.ensureEmailAvailable(dto.email);
+
+    const cpf = this.normalizeCpf(dto.cpf);
+    await this.ensureCpfValid(cpf);
+    await this.ensureCpfAvailable(cpf);
+
     const passwordHash = await this.hashPassword(dto.password);
 
     const user = await this.prisma.user.create({
@@ -70,6 +72,8 @@ export class AuthService {
         email: dto.email.toLowerCase(),
         passwordHash,
         name: dto.name,
+        phone: this.normalizePhone(dto.phone),
+        cpf,
         role: UserRole.revendedor,
         plan: Plan.free,
       },
@@ -79,18 +83,56 @@ export class AuthService {
   }
 
   async registerLojista(dto: RegisterLojistaDto, ctx: AuthContext): Promise<AuthResult> {
+    await this.verificationService.consumeToken(dto.emailVerificationToken, "email", dto.email);
+    await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
     await this.ensureEmailAvailable(dto.email);
+
+    const cpf = this.normalizeCpf(dto.cpf);
+    await this.ensureCpfValid(cpf);
+    await this.ensureCpfAvailable(cpf);
+
+    const cnpj = CnpjValidator.normalize(dto.cnpj);
+    if (!CnpjValidator.isValid(cnpj)) {
+      throw new ConflictException({
+        code: "INVALID_CNPJ_FORMAT",
+        message: "CNPJ inválido.",
+      });
+    }
+
+    const existing = await this.prisma.store.findUnique({ where: { cnpj } });
+    if (existing) {
+      throw new ConflictException({
+        code: "CNPJ_ALREADY_EXISTS",
+        message: "Este CNPJ já está cadastrado no RadarAuto.",
+      });
+    }
+
+    const lookup = await this.cnpjService.lookup(cnpj);
+
+    if (lookup.status !== "ATIVA") {
+      throw new ConflictException({
+        code: "CNPJ_INACTIVE",
+        message: `Este CNPJ não está ativo na Receita Federal (situação: ${lookup.status}).`,
+      });
+    }
+
     const passwordHash = await this.hashPassword(dto.password);
+    const normalizedPhone = this.normalizePhone(dto.phone);
 
     const user = await this.prisma.$transaction(async (tx) => {
       const store = await tx.store.create({
         data: {
-          name: dto.storeName,
-          initials: this.buildInitials(dto.storeName),
-          phone: dto.storePhone,
-          city: dto.storeCity,
-          state: dto.storeState.toUpperCase(),
-          since: new Date().getFullYear(),
+          name: lookup.tradeName ?? lookup.legalName,
+          legalName: lookup.legalName,
+          tradeName: lookup.tradeName,
+          cnpj,
+          initials: this.buildInitials(lookup.tradeName ?? lookup.legalName),
+          phone: lookup.phone ?? normalizedPhone,
+          whatsapp: normalizedPhone,
+          email: lookup.email,
+          city: lookup.city,
+          state: lookup.state.toUpperCase(),
+          since: lookup.openedAt ? this.parseYear(lookup.openedAt) : new Date().getFullYear(),
         },
       });
 
@@ -99,6 +141,8 @@ export class AuthService {
           email: dto.email.toLowerCase(),
           passwordHash,
           name: dto.name,
+          phone: normalizedPhone,
+          cpf,
           role: UserRole.lojista,
           plan: Plan.free,
           storeId: store.id,
@@ -124,6 +168,7 @@ export class AuthService {
         email: dto.email.toLowerCase(),
         passwordHash,
         name: dto.name,
+        phone: "",
         role: UserRole.funcionario,
         plan: Plan.free,
         storeId: actor.storeId,
@@ -136,7 +181,6 @@ export class AuthService {
     const email = dto.email.toLowerCase();
     const user = await this.prisma.user.findUnique({ where: { email } });
 
-    // Mensagem genérica pra não vazar se email existe (Regra 5)
     const genericError = new UnauthorizedException({
       code: "INVALID_CREDENTIALS",
       message: "Email ou senha incorretos.",
@@ -211,6 +255,24 @@ export class AuthService {
     });
   }
 
+  async isEmailAvailable(email: string): Promise<boolean> {
+    const exists = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+      select: { id: true },
+    });
+    return !exists;
+  }
+
+  async isCpfAvailable(rawCpf: string): Promise<boolean> {
+    const cpf = this.normalizeCpf(rawCpf);
+    if (!CpfValidator.isValid(cpf)) return false;
+    const exists = await this.prisma.user.findUnique({
+      where: { cpf },
+      select: { id: true },
+    });
+    return !exists;
+  }
+
   private async ensureEmailAvailable(email: string): Promise<void> {
     const exists = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
@@ -222,6 +284,32 @@ export class AuthService {
         message: "Este email já está cadastrado.",
       });
     }
+  }
+
+  private async ensureCpfValid(cpf: string): Promise<void> {
+    if (!CpfValidator.isValid(cpf)) {
+      throw new ConflictException({
+        code: "INVALID_CPF",
+        message: "CPF inválido.",
+      });
+    }
+  }
+
+  private async ensureCpfAvailable(cpf: string): Promise<void> {
+    const exists = await this.prisma.user.findUnique({
+      where: { cpf },
+      select: { id: true },
+    });
+    if (exists) {
+      throw new ConflictException({
+        code: "CPF_ALREADY_EXISTS",
+        message: "Este CPF já está cadastrado.",
+      });
+    }
+  }
+
+  private normalizeCpf(cpf: string): string {
+    return CpfValidator.normalize(cpf);
   }
 
   private async hashPassword(plain: string): Promise<string> {
@@ -263,5 +351,24 @@ export class AuthService {
     const first = words[0]?.[0] ?? "";
     const second = words[1]?.[0] ?? words[0]?.[1] ?? "";
     return (first + second).toUpperCase();
+  }
+
+  private normalizePhone(phone: string): string {
+    return phone.replace(/\D/g, "");
+  }
+
+  private parseYear(dateStr: string): number {
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+      const year = dateStr.split("/")[2];
+      const parsed = year ? Number(year) : NaN;
+      if (!Number.isNaN(parsed)) return parsed;
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const year = dateStr.split("-")[0];
+      const parsed = year ? Number(year) : NaN;
+      if (!Number.isNaN(parsed)) return parsed;
+    }
+    const d = new Date(dateStr);
+    return Number.isNaN(d.getTime()) ? new Date().getFullYear() : d.getFullYear();
   }
 }
