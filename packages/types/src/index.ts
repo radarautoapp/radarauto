@@ -20,3 +20,5 @@ export * from "./api/users.js";
 export * from "./api/sessions.js";
 export * from "./api/stores.js";
 export * from "./api/employees.js";
+export * from "./api/fipe.js";
+export * from "./api/brands.js";

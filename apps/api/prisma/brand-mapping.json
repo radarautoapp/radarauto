@@ -1,0 +1,858 @@
+[
+  {
+    "fipeCode": "1",
+    "name": "Acura",
+    "slug": "acura",
+    "format": "png",
+    "popular": false,
+    "order": 100
+  },
+  {
+    "fipeCode": "2",
+    "name": "Agrale",
+    "slug": "agrale",
+    "format": null,
+    "popular": false,
+    "order": 101
+  },
+  {
+    "fipeCode": "3",
+    "name": "Alfa Romeo",
+    "slug": "alfa-romeo",
+    "format": "svg",
+    "popular": false,
+    "order": 102
+  },
+  {
+    "fipeCode": "4",
+    "name": "AM Gen",
+    "slug": "am-gen",
+    "format": null,
+    "popular": false,
+    "order": 103
+  },
+  {
+    "fipeCode": "5",
+    "name": "Asia Motors",
+    "slug": "asia-motors",
+    "format": null,
+    "popular": false,
+    "order": 104
+  },
+  {
+    "fipeCode": "189",
+    "name": "ASTON MARTIN",
+    "slug": "aston-martin",
+    "format": "svg",
+    "popular": false,
+    "order": 105
+  },
+  {
+    "fipeCode": "6",
+    "name": "Audi",
+    "slug": "audi",
+    "format": "svg",
+    "popular": false,
+    "order": 106
+  },
+  {
+    "fipeCode": "207",
+    "name": "Baby",
+    "slug": "baby",
+    "format": null,
+    "popular": false,
+    "order": 107
+  },
+  {
+    "fipeCode": "7",
+    "name": "BMW",
+    "slug": "bmw",
+    "format": "svg",
+    "popular": false,
+    "order": 108
+  },
+  {
+    "fipeCode": "8",
+    "name": "BRM",
+    "slug": "brm",
+    "format": null,
+    "popular": false,
+    "order": 109
+  },
+  {
+    "fipeCode": "123",
+    "name": "Bugre",
+    "slug": "bugre",
+    "format": null,
+    "popular": false,
+    "order": 110
+  },
+  {
+    "fipeCode": "238",
+    "name": "BYD",
+    "slug": "byd",
+    "format": "svg",
+    "popular": false,
+    "order": 111
+  },
+  {
+    "fipeCode": "236",
+    "name": "CAB Motors",
+    "slug": "cab-motors",
+    "format": null,
+    "popular": false,
+    "order": 112
+  },
+  {
+    "fipeCode": "10",
+    "name": "Cadillac",
+    "slug": "cadillac",
+    "format": "svg",
+    "popular": false,
+    "order": 113
+  },
+  {
+    "fipeCode": "265",
+    "name": "Caoa Changan",
+    "slug": "changan",
+    "format": "png",
+    "popular": false,
+    "order": 114
+  },
+  {
+    "fipeCode": "245",
+    "name": "Caoa Chery",
+    "slug": "chery",
+    "format": "svg",
+    "popular": true,
+    "order": 14
+  },
+  {
+    "fipeCode": "161",
+    "name": "Caoa Chery/Chery",
+    "slug": "chery",
+    "format": "svg",
+    "popular": false,
+    "order": 115
+  },
+  {
+    "fipeCode": "11",
+    "name": "CBT Jipe",
+    "slug": "cbt-jipe",
+    "format": null,
+    "popular": false,
+    "order": 116
+  },
+  {
+    "fipeCode": "136",
+    "name": "CHANA",
+    "slug": "chana",
+    "format": null,
+    "popular": false,
+    "order": 117
+  },
+  {
+    "fipeCode": "182",
+    "name": "CHANGAN",
+    "slug": "changan",
+    "format": "png",
+    "popular": false,
+    "order": 118
+  },
+  {
+    "fipeCode": "12",
+    "name": "Chrysler",
+    "slug": "chrysler",
+    "format": "svg",
+    "popular": false,
+    "order": 119
+  },
+  {
+    "fipeCode": "13",
+    "name": "Citroën",
+    "slug": "citroen",
+    "format": "svg",
+    "popular": true,
+    "order": 11
+  },
+  {
+    "fipeCode": "14",
+    "name": "Cross Lander",
+    "slug": "cross-lander",
+    "format": null,
+    "popular": false,
+    "order": 120
+  },
+  {
+    "fipeCode": "241",
+    "name": "D2D Motors",
+    "slug": "d2d-motors",
+    "format": null,
+    "popular": false,
+    "order": 121
+  },
+  {
+    "fipeCode": "15",
+    "name": "Daewoo",
+    "slug": "daewoo",
+    "format": "svg",
+    "popular": false,
+    "order": 122
+  },
+  {
+    "fipeCode": "16",
+    "name": "Daihatsu",
+    "slug": "daihatsu",
+    "format": "png",
+    "popular": false,
+    "order": 123
+  },
+  {
+    "fipeCode": "263",
+    "name": "Denza",
+    "slug": "denza",
+    "format": null,
+    "popular": false,
+    "order": 124
+  },
+  {
+    "fipeCode": "246",
+    "name": "DFSK",
+    "slug": "dfsk",
+    "format": "svg",
+    "popular": false,
+    "order": 125
+  },
+  {
+    "fipeCode": "17",
+    "name": "Dodge",
+    "slug": "dodge",
+    "format": "svg",
+    "popular": false,
+    "order": 126
+  },
+  {
+    "fipeCode": "147",
+    "name": "EFFA",
+    "slug": "effa",
+    "format": null,
+    "popular": false,
+    "order": 127
+  },
+  {
+    "fipeCode": "18",
+    "name": "Engesa",
+    "slug": "engesa",
+    "format": null,
+    "popular": false,
+    "order": 128
+  },
+  {
+    "fipeCode": "19",
+    "name": "Envemo",
+    "slug": "envemo",
+    "format": null,
+    "popular": false,
+    "order": 129
+  },
+  {
+    "fipeCode": "20",
+    "name": "Ferrari",
+    "slug": "ferrari",
+    "format": "svg",
+    "popular": false,
+    "order": 130
+  },
+  {
+    "fipeCode": "249",
+    "name": "FEVER",
+    "slug": "fever",
+    "format": null,
+    "popular": false,
+    "order": 131
+  },
+  {
+    "fipeCode": "21",
+    "name": "Fiat",
+    "slug": "fiat",
+    "format": "svg",
+    "popular": true,
+    "order": 1
+  },
+  {
+    "fipeCode": "149",
+    "name": "Fibravan",
+    "slug": "fibravan",
+    "format": null,
+    "popular": false,
+    "order": 132
+  },
+  {
+    "fipeCode": "22",
+    "name": "Ford",
+    "slug": "ford",
+    "format": "svg",
+    "popular": true,
+    "order": 9
+  },
+  {
+    "fipeCode": "190",
+    "name": "FOTON",
+    "slug": "foton",
+    "format": "png",
+    "popular": false,
+    "order": 133
+  },
+  {
+    "fipeCode": "170",
+    "name": "Fyber",
+    "slug": "fyber",
+    "format": null,
+    "popular": false,
+    "order": 134
+  },
+  {
+    "fipeCode": "254",
+    "name": "GAC",
+    "slug": "gac-group",
+    "format": "png",
+    "popular": false,
+    "order": 135
+  },
+  {
+    "fipeCode": "199",
+    "name": "GEELY",
+    "slug": "geely",
+    "format": "png",
+    "popular": false,
+    "order": 136
+  },
+  {
+    "fipeCode": "23",
+    "name": "GM - Chevrolet",
+    "slug": "chevrolet",
+    "format": "svg",
+    "popular": true,
+    "order": 2
+  },
+  {
+    "fipeCode": "153",
+    "name": "GREAT WALL",
+    "slug": "great-wall",
+    "format": "svg",
+    "popular": false,
+    "order": 137
+  },
+  {
+    "fipeCode": "24",
+    "name": "Gurgel",
+    "slug": "gurgel",
+    "format": null,
+    "popular": false,
+    "order": 138
+  },
+  {
+    "fipeCode": "240",
+    "name": "GWM",
+    "slug": "gwm",
+    "format": null,
+    "popular": false,
+    "order": 139
+  },
+  {
+    "fipeCode": "152",
+    "name": "HAFEI",
+    "slug": "hafei",
+    "format": "png",
+    "popular": false,
+    "order": 140
+  },
+  {
+    "fipeCode": "214",
+    "name": "HITECH ELECTRIC",
+    "slug": "hitech-electric",
+    "format": null,
+    "popular": false,
+    "order": 141
+  },
+  {
+    "fipeCode": "25",
+    "name": "Honda",
+    "slug": "honda",
+    "format": "svg",
+    "popular": true,
+    "order": 5
+  },
+  {
+    "fipeCode": "26",
+    "name": "Hyundai",
+    "slug": "hyundai",
+    "format": "svg",
+    "popular": true,
+    "order": 4
+  },
+  {
+    "fipeCode": "27",
+    "name": "Isuzu",
+    "slug": "isuzu",
+    "format": "svg",
+    "popular": false,
+    "order": 142
+  },
+  {
+    "fipeCode": "208",
+    "name": "IVECO",
+    "slug": "iveco",
+    "format": "svg",
+    "popular": false,
+    "order": 143
+  },
+  {
+    "fipeCode": "177",
+    "name": "JAC",
+    "slug": "jac",
+    "format": "png",
+    "popular": false,
+    "order": 144
+  },
+  {
+    "fipeCode": "251",
+    "name": "Jaecoo",
+    "slug": "jaecoo",
+    "format": "svg",
+    "popular": false,
+    "order": 145
+  },
+  {
+    "fipeCode": "28",
+    "name": "Jaguar",
+    "slug": "jaguar",
+    "format": "svg",
+    "popular": false,
+    "order": 146
+  },
+  {
+    "fipeCode": "29",
+    "name": "Jeep",
+    "slug": "jeep",
+    "format": "svg",
+    "popular": true,
+    "order": 7
+  },
+  {
+    "fipeCode": "264",
+    "name": "Jetour",
+    "slug": "jetour",
+    "format": "png",
+    "popular": false,
+    "order": 147
+  },
+  {
+    "fipeCode": "154",
+    "name": "JINBEI",
+    "slug": "jinbei",
+    "format": null,
+    "popular": false,
+    "order": 148
+  },
+  {
+    "fipeCode": "30",
+    "name": "JPX",
+    "slug": "jpx",
+    "format": null,
+    "popular": false,
+    "order": 149
+  },
+  {
+    "fipeCode": "31",
+    "name": "Kia Motors",
+    "slug": "kia",
+    "format": "svg",
+    "popular": true,
+    "order": 13
+  },
+  {
+    "fipeCode": "32",
+    "name": "Lada",
+    "slug": "lada",
+    "format": "png",
+    "popular": false,
+    "order": 150
+  },
+  {
+    "fipeCode": "171",
+    "name": "LAMBORGHINI",
+    "slug": "lamborghini",
+    "format": "svg",
+    "popular": false,
+    "order": 151
+  },
+  {
+    "fipeCode": "33",
+    "name": "Land Rover",
+    "slug": "land-rover",
+    "format": "svg",
+    "popular": false,
+    "order": 152
+  },
+  {
+    "fipeCode": "260",
+    "name": "Leapmotor",
+    "slug": "leapmotor",
+    "format": "png",
+    "popular": false,
+    "order": 153
+  },
+  {
+    "fipeCode": "34",
+    "name": "Lexus",
+    "slug": "lexus",
+    "format": "svg",
+    "popular": false,
+    "order": 154
+  },
+  {
+    "fipeCode": "168",
+    "name": "LIFAN",
+    "slug": "lifan",
+    "format": "png",
+    "popular": false,
+    "order": 155
+  },
+  {
+    "fipeCode": "127",
+    "name": "LOBINI",
+    "slug": "lobini",
+    "format": "png",
+    "popular": false,
+    "order": 156
+  },
+  {
+    "fipeCode": "35",
+    "name": "Lotus",
+    "slug": "lotus",
+    "format": "svg",
+    "popular": false,
+    "order": 157
+  },
+  {
+    "fipeCode": "140",
+    "name": "Mahindra",
+    "slug": "mahindra",
+    "format": "png",
+    "popular": false,
+    "order": 158
+  },
+  {
+    "fipeCode": "36",
+    "name": "Maserati",
+    "slug": "maserati",
+    "format": "svg",
+    "popular": false,
+    "order": 159
+  },
+  {
+    "fipeCode": "37",
+    "name": "Matra",
+    "slug": "matra",
+    "format": null,
+    "popular": false,
+    "order": 160
+  },
+  {
+    "fipeCode": "38",
+    "name": "Mazda",
+    "slug": "mazda",
+    "format": "svg",
+    "popular": false,
+    "order": 161
+  },
+  {
+    "fipeCode": "211",
+    "name": "Mclaren",
+    "slug": "mclaren",
+    "format": "svg",
+    "popular": false,
+    "order": 162
+  },
+  {
+    "fipeCode": "39",
+    "name": "Mercedes-Benz",
+    "slug": "mercedes-benz",
+    "format": "svg",
+    "popular": false,
+    "order": 163
+  },
+  {
+    "fipeCode": "40",
+    "name": "Mercury",
+    "slug": "mercury",
+    "format": "png",
+    "popular": false,
+    "order": 164
+  },
+  {
+    "fipeCode": "167",
+    "name": "MG",
+    "slug": "mg",
+    "format": "svg",
+    "popular": false,
+    "order": 165
+  },
+  {
+    "fipeCode": "156",
+    "name": "MINI",
+    "slug": "mini",
+    "format": "svg",
+    "popular": false,
+    "order": 166
+  },
+  {
+    "fipeCode": "41",
+    "name": "Mitsubishi",
+    "slug": "mitsubishi",
+    "format": "svg",
+    "popular": true,
+    "order": 12
+  },
+  {
+    "fipeCode": "42",
+    "name": "Miura",
+    "slug": "miura",
+    "format": null,
+    "popular": false,
+    "order": 167
+  },
+  {
+    "fipeCode": "250",
+    "name": "NETA",
+    "slug": "neta",
+    "format": null,
+    "popular": false,
+    "order": 168
+  },
+  {
+    "fipeCode": "43",
+    "name": "Nissan",
+    "slug": "nissan",
+    "format": "svg",
+    "popular": true,
+    "order": 8
+  },
+  {
+    "fipeCode": "252",
+    "name": "Omoda",
+    "slug": "omoda",
+    "format": "svg",
+    "popular": false,
+    "order": 169
+  },
+  {
+    "fipeCode": "44",
+    "name": "Peugeot",
+    "slug": "peugeot",
+    "format": "svg",
+    "popular": true,
+    "order": 10
+  },
+  {
+    "fipeCode": "45",
+    "name": "Plymouth",
+    "slug": "plymouth",
+    "format": "png",
+    "popular": false,
+    "order": 170
+  },
+  {
+    "fipeCode": "46",
+    "name": "Pontiac",
+    "slug": "pontiac",
+    "format": "svg",
+    "popular": false,
+    "order": 171
+  },
+  {
+    "fipeCode": "47",
+    "name": "Porsche",
+    "slug": "porsche",
+    "format": "svg",
+    "popular": false,
+    "order": 172
+  },
+  {
+    "fipeCode": "185",
+    "name": "RAM",
+    "slug": "ram",
+    "format": "png",
+    "popular": false,
+    "order": 173
+  },
+  {
+    "fipeCode": "186",
+    "name": "RELY",
+    "slug": "rely",
+    "format": null,
+    "popular": false,
+    "order": 174
+  },
+  {
+    "fipeCode": "48",
+    "name": "Renault",
+    "slug": "renault",
+    "format": "svg",
+    "popular": true,
+    "order": 6
+  },
+  {
+    "fipeCode": "195",
+    "name": "Rolls-Royce",
+    "slug": "rolls-royce",
+    "format": "svg",
+    "popular": false,
+    "order": 175
+  },
+  {
+    "fipeCode": "49",
+    "name": "Rover",
+    "slug": "rover",
+    "format": "svg",
+    "popular": false,
+    "order": 176
+  },
+  {
+    "fipeCode": "50",
+    "name": "Saab",
+    "slug": "saab",
+    "format": "svg",
+    "popular": false,
+    "order": 177
+  },
+  {
+    "fipeCode": "51",
+    "name": "Saturn",
+    "slug": "saturn",
+    "format": "png",
+    "popular": false,
+    "order": 178
+  },
+  {
+    "fipeCode": "52",
+    "name": "Seat",
+    "slug": "seat",
+    "format": "svg",
+    "popular": false,
+    "order": 179
+  },
+  {
+    "fipeCode": "247",
+    "name": "SERES",
+    "slug": "seres",
+    "format": null,
+    "popular": false,
+    "order": 180
+  },
+  {
+    "fipeCode": "183",
+    "name": "SHINERAY",
+    "slug": "shineray",
+    "format": null,
+    "popular": false,
+    "order": 181
+  },
+  {
+    "fipeCode": "157",
+    "name": "smart",
+    "slug": "smart",
+    "format": "svg",
+    "popular": false,
+    "order": 182
+  },
+  {
+    "fipeCode": "125",
+    "name": "SSANGYONG",
+    "slug": "ssangyong",
+    "format": "svg",
+    "popular": false,
+    "order": 183
+  },
+  {
+    "fipeCode": "54",
+    "name": "Subaru",
+    "slug": "subaru",
+    "format": "svg",
+    "popular": false,
+    "order": 184
+  },
+  {
+    "fipeCode": "55",
+    "name": "Suzuki",
+    "slug": "suzuki",
+    "format": "svg",
+    "popular": false,
+    "order": 185
+  },
+  {
+    "fipeCode": "165",
+    "name": "TAC",
+    "slug": "tac",
+    "format": null,
+    "popular": false,
+    "order": 186
+  },
+  {
+    "fipeCode": "56",
+    "name": "Toyota",
+    "slug": "toyota",
+    "format": "svg",
+    "popular": true,
+    "order": 3
+  },
+  {
+    "fipeCode": "57",
+    "name": "Troller",
+    "slug": "troller",
+    "format": "png",
+    "popular": false,
+    "order": 187
+  },
+  {
+    "fipeCode": "58",
+    "name": "Volvo",
+    "slug": "volvo",
+    "format": "svg",
+    "popular": false,
+    "order": 188
+  },
+  {
+    "fipeCode": "59",
+    "name": "VW - VolksWagen",
+    "slug": "volkswagen",
+    "format": "svg",
+    "popular": true,
+    "order": 0
+  },
+  {
+    "fipeCode": "163",
+    "name": "Wake",
+    "slug": "wake",
+    "format": null,
+    "popular": false,
+    "order": 189
+  },
+  {
+    "fipeCode": "120",
+    "name": "Walk",
+    "slug": "walk",
+    "format": null,
+    "popular": false,
+    "order": 190
+  },
+  {
+    "fipeCode": "253",
+    "name": "ZEEKR",
+    "slug": "zeekr",
+    "format": "png",
+    "popular": false,
+    "order": 191
+  }
+]

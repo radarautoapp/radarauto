@@ -291,3 +291,19 @@ model EmployeeInvite {
   @@index([userId])
   @@index([expiresAt])
 }
+
+model Brand {
+  id         String   @id @default(uuid())
+  fipeCode   String   @unique
+  name       String
+  slug       String
+  logoUrl    String?
+  logoFormat String?
+  popular    Boolean  @default(false)
+  order      Int      @default(999)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([popular])
+  @@index([order])
+}
