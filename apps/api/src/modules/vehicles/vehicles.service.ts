@@ -16,6 +16,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  NotFoundException,
   Inject,
   Injectable,
   Logger,
@@ -145,6 +146,119 @@ export class VehiclesService {
       status: result.listing.status,
       photos: photoUrls,
     };
+  }
+
+  /**
+   * Lista os veículos da loja do usuário (lojista e funcionário veem todos
+   * os da mesma loja). Inclui status do listing e foto de capa.
+   */
+  async list(user: SafeUser) {
+    if (!user.storeId) {
+      throw new ForbiddenException({
+        code: "NO_STORE",
+        message: "Você não tem uma loja associada.",
+      });
+    }
+
+    const vehicles = await this.prisma.vehicle.findMany({
+      where: { storeId: user.storeId, deletedAt: null },
+      include: {
+        listing: {
+          select: {
+            status: true,
+            views: true,
+            favorites: true,
+            createdBy: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return vehicles.map((v) => {
+      const status = v.listing?.status ?? "DRAFT";
+      return {
+        id: v.id,
+        brand: v.brand,
+        model: v.model,
+        version: v.version,
+        year: v.year,
+        yearModel: v.yearModel,
+        km: v.km,
+        color: v.color,
+        price: v.price,
+        fipe: v.fipe,
+        city: v.city,
+        state: v.state,
+        coverPhoto: v.photos[0] ?? null,
+        photoCount: v.photos.length,
+        delivery: v.delivery,
+        status,
+        views: v.listing?.views ?? 0,
+        favorites: v.listing?.favorites ?? 0,
+        createdByName: v.listing?.createdBy?.name ?? "—",
+        pendingApproval: status === "PENDING",
+        createdAt: v.createdAt.toISOString(),
+      };
+    });
+  }
+
+  /**
+   * Aprova um veículo PENDING → ACTIVE. Só o lojista (dono) da loja pode.
+   */
+  async approve(user: SafeUser, vehicleId: string) {
+    if (user.role !== "lojista" && user.role !== "admin") {
+      throw new ForbiddenException({
+        code: "NOT_ALLOWED",
+        message: "Apenas o lojista pode aprovar veículos.",
+      });
+    }
+
+    const vehicle = await this.prisma.vehicle.findFirst({
+      where: { id: vehicleId, deletedAt: null },
+      include: { listing: true },
+    });
+
+    if (!vehicle || !vehicle.listing) {
+      throw new NotFoundException({
+        code: "VEHICLE_NOT_FOUND",
+        message: "Veículo não encontrado.",
+      });
+    }
+
+    if (vehicle.storeId !== user.storeId) {
+      throw new ForbiddenException({
+        code: "NOT_YOUR_STORE",
+        message: "Esse veículo não é da sua loja.",
+      });
+    }
+
+    if (vehicle.listing.status !== "PENDING") {
+      throw new ForbiddenException({
+        code: "NOT_PENDING",
+        message: "Esse veículo não está aguardando aprovação.",
+      });
+    }
+
+    const now = new Date();
+    const updated = await this.prisma.listing.update({
+      where: { id: vehicle.listing.id },
+      data: {
+        status: "ACTIVE",
+        approvedById: user.id,
+        approvedAt: now,
+        publishedAt: vehicle.listing.publishedAt ?? now,
+      },
+      select: { status: true },
+    });
+
+    this.logger.log({
+      msg: "vehicle.approved",
+      vehicleId,
+      by: user.id,
+    });
+
+    return { id: vehicleId, status: updated.status };
   }
 
   /** Normaliza foto: 4:3, cover, otimizada em webp. */

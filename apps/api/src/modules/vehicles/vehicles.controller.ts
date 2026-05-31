@@ -11,6 +11,8 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFiles,
   UseGuards,
@@ -41,6 +43,17 @@ interface MulterFile {
 @UseGuards(JwtAuthGuard)
 export class VehiclesController {
   constructor(private readonly vehicles: VehiclesService) {}
+
+  @Get()
+  async list(@CurrentUser() user: SafeUser) {
+    const vehicles = await this.vehicles.list(user);
+    return { vehicles };
+  }
+
+  @Post(":id/approve")
+  async approve(@CurrentUser() user: SafeUser, @Param("id") id: string) {
+    return this.vehicles.approve(user, id);
+  }
 
   @Post()
   @UseInterceptors(

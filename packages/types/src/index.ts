@@ -24,3 +24,4 @@ export * from "./api/fipe.js";
 export * from "./api/brands.js";
 export * from "./api/pricing.js";
 export * from "./api/locations.js";
+export * from "./api/vehicles.js";

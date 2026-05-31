@@ -4,7 +4,9 @@
  * Cria veículo via multipart (dados JSON + fotos).
  * Usa fetch direto (não apiFetch) porque envia FormData, não JSON.
  */
-import { tokenStorage } from "@/lib/api";
+import type { ApproveVehicleResponse, ListVehiclesResponse } from "@radar/types";
+
+import { apiFetch, tokenStorage } from "@/lib/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -37,6 +39,16 @@ export interface CreateVehicleResult {
 }
 
 export const vehiclesApi = {
+  async list(): Promise<ListVehiclesResponse> {
+    return apiFetch<ListVehiclesResponse>("/vehicles", { method: "GET" });
+  },
+
+  async approve(id: string): Promise<ApproveVehicleResponse> {
+    return apiFetch<ApproveVehicleResponse>(`/vehicles/${id}/approve`, {
+      method: "POST",
+    });
+  },
+
   async create(payload: CreateVehiclePayload, photos: File[]): Promise<CreateVehicleResult> {
     const fd = new FormData();
     fd.append("data", JSON.stringify(payload));
