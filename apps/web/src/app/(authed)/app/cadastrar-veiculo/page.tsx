@@ -2,7 +2,7 @@
  * /app/cadastrar-veiculo — hospeda o VehicleWizard.
  *
  * Herda cidade/UF da loja do usuário (via stores-api).
- * Na 4.1c o onComplete vai criar o veículo de verdade no backend.
+ * onComplete cria o veículo de verdade (vehiclesApi.create, multipart com fotos).
  */
 "use client";
 
@@ -13,6 +13,8 @@ import { storesApi } from "@/lib/stores-api";
 
 import { VehicleWizard } from "./_wizard/VehicleWizard";
 import type { VehicleFormState } from "./_wizard/form-state";
+import { reaisToCents } from "./_wizard/helpers";
+import { vehiclesApi } from "./_wizard/vehicles-api";
 
 export default function CadastrarVeiculoPage(): JSX.Element {
   const router = useRouter();
@@ -31,11 +33,34 @@ export default function CadastrarVeiculoPage(): JSX.Element {
       });
   }, []);
 
-  const handleComplete = async (form: VehicleFormState): Promise<void> => {
-    // 4.1c implementa a criação real (vehiclesApi.create).
-    // Por ora, loga e volta pra meus-veículos.
-    // eslint-disable-next-line no-console
-    console.log("Veículo a cadastrar:", form);
+  const handleComplete = async (form: VehicleFormState, photos: File[]): Promise<void> => {
+    const priceCents = typeof form.priceReais === "number" ? reaisToCents(form.priceReais) : 0;
+
+    await vehiclesApi.create(
+      {
+        brand: form.brandName,
+        model: form.modelName,
+        version: form.yearName || form.modelName,
+        year: form.year,
+        yearModel: form.yearModel,
+        km: typeof form.km === "number" ? form.km : 0,
+        fuel: form.fuel,
+        transm: form.transm,
+        color: form.color,
+        colorHex: form.colorHex,
+        plate: form.plate || undefined,
+        category: form.category,
+        price: priceCents,
+        fipe: form.fipeCents,
+        city: form.city,
+        state: form.state,
+        optionals: form.optionals,
+        obs: form.obs || undefined,
+        delivery: form.delivery,
+      },
+      photos,
+    );
+
     router.push("/app/meus-veiculos");
   };
 

@@ -5,6 +5,9 @@
  * Serve via rota estática /uploads/* configurada no main.ts.
  *
  * Usado em desenvolvimento. NÃO usar em produção (containers stateless).
+ *
+ * Bucket opcional (opts.bucket) vira um subdiretório: uploads/{bucket}/{key}.
+ * Mantém paridade com o SupabaseStorageProvider.
  */
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -25,24 +28,31 @@ export class LocalStorageProvider implements IStorageService {
     this.publicBaseUrl = `${apiBaseUrl}/uploads`;
   }
 
+  /** Combina bucket + key num path relativo (bucket vira subpasta). */
+  private relPath(key: string, bucket?: string): string {
+    return bucket ? `${bucket}/${key}` : key;
+  }
+
   async upload(opts: UploadOptions): Promise<UploadResult> {
-    const fullPath = join(this.rootDir, opts.key);
+    const rel = this.relPath(opts.key, opts.bucket);
+    const fullPath = join(this.rootDir, rel);
     await mkdir(dirname(fullPath), { recursive: true });
     await writeFile(fullPath, opts.buffer);
-    const url = `${this.publicBaseUrl}/${opts.key}`;
-    this.logger.debug({ msg: "storage.local.upload", key: opts.key, size: opts.buffer.length });
+    const url = `${this.publicBaseUrl}/${rel}`;
+    this.logger.debug({ msg: "storage.local.upload", key: rel, size: opts.buffer.length });
     return { url, key: opts.key };
   }
 
-  async delete(key: string): Promise<void> {
-    const fullPath = join(this.rootDir, key);
+  async delete(key: string, bucket?: string): Promise<void> {
+    const rel = this.relPath(key, bucket);
+    const fullPath = join(this.rootDir, rel);
     try {
       await unlink(fullPath);
-      this.logger.debug({ msg: "storage.local.delete", key });
+      this.logger.debug({ msg: "storage.local.delete", key: rel });
     } catch (err) {
       // Arquivo já não existe — OK
       if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
-        this.logger.warn({ msg: "storage.local.delete.failed", key, error: String(err) });
+        this.logger.warn({ msg: "storage.local.delete.failed", key: rel, error: String(err) });
       }
     }
   }

@@ -22,6 +22,7 @@ import { FipeModule } from "./modules/fipe/fipe.module";
 import { BrandsModule } from "./modules/brands/brands.module";
 import { PricingModule } from "./modules/pricing/pricing.module";
 import { LocationsModule } from "./modules/locations/locations.module";
+import { VehiclesModule } from "./modules/vehicles/vehicles.module";
 import { EmployeesModule } from "./modules/employees/employees.module";
 import { StoresModule } from "./modules/stores/stores.module";
 import { UsersModule } from "./modules/users/users.module";
@@ -30,6 +31,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
+    VehiclesModule,
     LocationsModule,
     PricingModule,
     BrandsModule,

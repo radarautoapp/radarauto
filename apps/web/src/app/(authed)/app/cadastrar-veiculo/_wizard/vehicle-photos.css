@@ -1,0 +1,131 @@
+/* ===== Step de Fotos + Cropper ===== */
+
+.vwz-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.vwz-photo-tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-2, #f1f5f9);
+  cursor: grab;
+}
+.vwz-photo-tile.dragging {
+  opacity: 0.5;
+}
+.vwz-photo-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+.vwz-photo-cover {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.vwz-photo-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(15, 23, 42, 0.65);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.vwz-photo-remove:hover {
+  background: rgba(220, 38, 38, 0.9);
+}
+
+.vwz-photo-add {
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  border: 2px dashed var(--border);
+  background: var(--bg-2, #f8fafc);
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.vwz-photo-add:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-t);
+}
+
+/* Cropper modal */
+.vwz-cropper-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.vwz-cropper-modal {
+  background: var(--card, #fff);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 540px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3);
+}
+.vwz-cropper-head {
+  padding: 18px 20px 12px;
+}
+.vwz-cropper-head h3 {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 2px;
+}
+.vwz-cropper-head p {
+  font-size: 13px;
+  margin: 0;
+}
+.vwz-cropper-area {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  background: #0f172a;
+}
+.vwz-cropper-controls {
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vwz-cropper-range {
+  flex: 1;
+  accent-color: var(--primary);
+}
+.vwz-cropper-foot {
+  padding: 0 20px 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

@@ -7,6 +7,7 @@
 @import "@radar/ui/styles.css";
 @import "./(authed)/app/cadastrar-veiculo/_wizard/vehicle-wizard.css";
 @import "./(authed)/app/cadastrar-veiculo/_wizard/vehicle-price.css";
+@import "./(authed)/app/cadastrar-veiculo/_wizard/vehicle-photos.css";
 
 @tailwind base;
 @tailwind components;

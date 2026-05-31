@@ -14,6 +14,11 @@ export interface UploadOptions {
   buffer: Buffer;
   /** MIME type final. Default: image/webp */
   contentType?: string;
+  /**
+   * Bucket de destino (opcional). Se omitido, usa o bucket default
+   * (SUPABASE_STORAGE_BUCKET). Ex: "vehicles", "brands".
+   */
+  bucket?: string;
 }
 
 export interface UploadResult {
@@ -32,8 +37,9 @@ export interface IStorageService {
 
   /**
    * Apaga arquivo pela key. Não lança erro se não existir.
+   * @param bucket bucket de destino (opcional, default = bucket padrão)
    */
-  delete(key: string): Promise<void>;
+  delete(key: string, bucket?: string): Promise<void>;
 
   /**
    * Extrai a key (ex: "logos/abc-123.webp") a partir de uma URL pública.

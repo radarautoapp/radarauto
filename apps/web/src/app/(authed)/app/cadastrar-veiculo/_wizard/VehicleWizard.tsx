@@ -11,6 +11,8 @@
 
 import {
   ArrowLeft,
+  GripVertical,
+  ImagePlus,
   BarChart3,
   Calendar,
   Car,
@@ -38,6 +40,7 @@ import { toFriendlyError } from "@/lib/error-messages";
 
 import { BR_STATES } from "./br-states";
 import { FipeCombobox, type FipeOption } from "./components/FipeCombobox";
+import { PhotoCropperModal } from "./PhotoCropperModal";
 import { KmInput, MoneyInput } from "./components/MoneyKmInput";
 import {
   BLANK_VEHICLE_FORM,
@@ -104,7 +107,7 @@ export interface VehicleWizardProps {
   storeCity?: string;
   storeState?: string;
   onCancel: () => void;
-  onComplete: (form: VehicleFormState) => Promise<void>;
+  onComplete: (form: VehicleFormState, photos: File[]) => Promise<void>;
 }
 
 export function VehicleWizard({
@@ -147,6 +150,13 @@ export function VehicleWizard({
   const [citiesLoading, setCitiesLoading] = useState(false);
 
   const [fipeLoading, setFipeLoading] = useState(false);
+
+  // Fotos: ficam como File[] no estado (NAO no autosave/localStorage).
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [cropperSrc, setCropperSrc] = useState<string | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const [recLoading, setRecLoading] = useState(false);
   const [recommended, setRecommended] = useState<{
     priceCents: number;
@@ -243,6 +253,50 @@ export function VehicleWizard({
       .finally(() => setCitiesLoading(false));
   }, [form.state]);
 
+  // ---- Fotos ----
+  const onPhotoPicked = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (photoFiles.length >= 8) return;
+    const reader = new FileReader();
+    reader.addEventListener("load", () => setCropperSrc(reader.result as string));
+    reader.readAsDataURL(file);
+  };
+
+  const onCropConfirm = (blob: Blob): void => {
+    const file = new File([blob], `foto-${Date.now()}.jpg`, { type: "image/jpeg" });
+    const preview = URL.createObjectURL(blob);
+    setPhotoFiles((prev) => [...prev, file]);
+    setPhotoPreviews((prev) => [...prev, preview]);
+    setCropperSrc(null);
+  };
+
+  const removePhoto = (index: number): void => {
+    setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
+    setPhotoPreviews((prev) => {
+      const url = prev[index];
+      if (url) URL.revokeObjectURL(url);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const reorderPhotos = (from: number, to: number): void => {
+    if (from === to) return;
+    setPhotoFiles((prev) => {
+      const next = [...prev];
+      const [m] = next.splice(from, 1);
+      next.splice(to, 0, m!);
+      return next;
+    });
+    setPhotoPreviews((prev) => {
+      const next = [...prev];
+      const [m] = next.splice(from, 1);
+      next.splice(to, 0, m!);
+      return next;
+    });
+  };
+
   // ---- Validação por step ----
   const validateStep = (key: StepKey): boolean => {
     switch (key) {
@@ -265,7 +319,7 @@ export function VehicleWizard({
       case "optionals":
         return true;
       case "photos":
-        return true; // placeholder na 4.1b; 4.1c exige >=1 foto
+        return photoFiles.length >= 1;
       default:
         return false;
     }
@@ -312,7 +366,7 @@ export function VehicleWizard({
     steps: STEP_KEYS,
     validateStep,
     onComplete: async () => {
-      await onComplete(form);
+      await onComplete(form, photoFiles);
       clearDraft();
     },
   });
@@ -886,46 +940,65 @@ export function VehicleWizard({
           </>
         )}
 
-        {/* STEP 9 — FOTOS (placeholder 4.1b) */}
+        {/* STEP 9 — FOTOS */}
         {wizard.currentStep === "photos" && (
           <div className="card card-p">
-            <div className="ra-flex ra-between ra-center" style={{ marginBottom: 14 }}>
+            <div className="ra-flex ra-between ra-center" style={{ marginBottom: 6 }}>
               <span className="micro">Fotos do veículo</span>
+              <span className="muted" style={{ fontSize: 12 }}>
+                {photoFiles.length}/8
+              </span>
             </div>
-            <div
-              style={{
-                width: "100%",
-                padding: "36px 20px",
-                borderRadius: 14,
-                border: "2px dashed var(--border)",
-                background: "var(--bg-2, #f8fafc)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  background: "var(--primary-t)",
-                  color: "var(--primary)",
-                  display: "grid",
-                  placeItems: "center",
-                }}
-              >
-                <Upload size={22} />
-              </div>
-              <div style={{ fontWeight: 700, fontSize: 15 }}>
-                Upload de fotos chega na próxima etapa
-              </div>
-              <div className="muted" style={{ fontSize: 12.5, textAlign: "center", maxWidth: 340 }}>
-                Por enquanto você pode finalizar o cadastro sem fotos. O upload com corte 4:3 e
-                reordenação vem na sub-fase 4.1c.
-              </div>
+            <div className="muted" style={{ fontSize: 12.5, marginBottom: 14 }}>
+              A primeira foto é a capa do anúncio. Arraste para reordenar.
             </div>
+
+            <div className="vwz-photo-grid">
+              {photoPreviews.map((src, i) => (
+                <div
+                  key={src}
+                  className={`vwz-photo-tile${dragIndex === i ? " dragging" : ""}`}
+                  draggable
+                  onDragStart={() => setDragIndex(i)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => {
+                    if (dragIndex !== null) reorderPhotos(dragIndex, i);
+                    setDragIndex(null);
+                  }}
+                  onDragEnd={() => setDragIndex(null)}
+                >
+                  <img src={src} alt={`Foto ${i + 1}`} />
+                  {i === 0 && <span className="vwz-photo-cover">Capa</span>}
+                  <button
+                    type="button"
+                    className="vwz-photo-remove"
+                    onClick={() => removePhoto(i)}
+                    aria-label="Remover foto"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+
+              {photoFiles.length < 8 && (
+                <button
+                  type="button"
+                  className="vwz-photo-add"
+                  onClick={() => photoInputRef.current?.click()}
+                >
+                  <ImagePlus size={24} />
+                  <span>Adicionar</span>
+                </button>
+              )}
+            </div>
+
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={onPhotoPicked}
+              style={{ display: "none" }}
+            />
           </div>
         )}
       </div>
@@ -956,6 +1029,14 @@ export function VehicleWizard({
         <div className="auth-error" role="alert" style={{ marginTop: 16 }}>
           <span>{wizard.error}</span>
         </div>
+      )}
+
+      {cropperSrc && (
+        <PhotoCropperModal
+          imageSrc={cropperSrc}
+          onCancel={() => setCropperSrc(null)}
+          onConfirm={onCropConfirm}
+        />
       )}
     </div>
   );
