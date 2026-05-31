@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 import { Sidebar, Topbar } from "@radar/ui";
 
 import { authApi } from "@/lib/auth-api";
-import { initialsFromName, navForRole, ROLE_META } from "@/lib/nav-config";
+import { initialsFromName, navForRole, ROLE_META, SUB_ROUTES } from "@/lib/nav-config";
 import { useAuthGuard } from "@/lib/use-auth-guard";
 import { useAuthExpired } from "@/lib/use-auth-expired";
 import { useAuthStore } from "@/stores/auth.store";
@@ -40,7 +40,12 @@ export default function AuthedLayout({
   const activeId = useMemo(() => {
     if (!pathname) return undefined;
     const match = navItems.find((n) => pathname === n.href || pathname.startsWith(`${n.href}/`));
-    return match?.id;
+    if (match) return match.id;
+    // sub-rota: herda o destaque do item-pai
+    const sub = SUB_ROUTES.find(
+      (r) => pathname === r.prefix || pathname.startsWith(`${r.prefix}/`),
+    );
+    return sub?.parentId;
   }, [pathname, navItems]);
 
   if (!ready || !isAuthenticated || !user) {
@@ -128,5 +133,7 @@ function inferPageMeta(
   if (pathname === "/app") return { title: "Início", subtitle: "Visão geral da sua conta" };
   const match = items.find((n) => pathname === n.href || pathname.startsWith(`${n.href}/`));
   if (match) return { title: match.label };
+  const sub = SUB_ROUTES.find((r) => pathname === r.prefix || pathname.startsWith(`${r.prefix}/`));
+  if (sub) return { title: sub.title };
   return { title: "RadarAuto" };
 }

@@ -45,6 +45,14 @@ export const ROLE_META: Record<
   admin: { label: "Admin", icon: Crown },
 };
 
+/**
+ * Sub-rotas: páginas que não estão no menu mas pertencem a um item-pai.
+ * Mantêm o destaque do menu no item-pai e definem um título próprio na topbar.
+ */
+export const SUB_ROUTES: { prefix: string; parentId: string; title: string }[] = [
+  { prefix: "/app/cadastrar-veiculo", parentId: "mine", title: "Cadastrar veículo" },
+];
+
 export function navForRole(role: UserRole): NavConfigItem[] {
   return NAV_BY_ROLE[role].map((id) => NAV_ITEMS[id]).filter((x): x is NavConfigItem => !!x);
 }
