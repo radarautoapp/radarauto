@@ -25,3 +25,4 @@ export * from "./api/brands.js";
 export * from "./api/pricing.js";
 export * from "./api/locations.js";
 export * from "./api/vehicles.js";
+export * from "./api/catalog.js";
