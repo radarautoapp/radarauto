@@ -120,7 +120,12 @@ export default function MeusVeiculosPage(): JSX.Element {
 
   const filtered = vehicles?.filter((v) => (filter === "all" ? true : v.status === filter)) ?? [];
 
-  const pendingCount = vehicles?.filter((v) => v.status === "PENDING").length ?? 0;
+  // Contagem por filtro: "all" = total; demais = veículos naquele status.
+  const countFor = (key: StatusFilter): number => {
+    if (!vehicles) return 0;
+    if (key === "all") return vehicles.length;
+    return vehicles.filter((v) => v.status === key).length;
+  };
 
   return (
     <div className="page-wrap">
@@ -139,10 +144,7 @@ export default function MeusVeiculosPage(): JSX.Element {
               className={`vlist-filter${filter === f.key ? " on" : ""}`}
               onClick={() => setFilter(f.key)}
             >
-              {f.label}
-              {f.key === "PENDING" && pendingCount > 0 && (
-                <span className="vlist-filter-badge">{pendingCount}</span>
-              )}
+              {f.label} ({countFor(f.key)})
             </button>
           ))}
         </div>
