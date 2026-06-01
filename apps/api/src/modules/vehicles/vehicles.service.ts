@@ -26,6 +26,8 @@ import sharp from "sharp";
 
 import { SafeUser } from "../auth/auth.service";
 
+import { computeRankingScore } from "../../common/ranking";
+
 import { PrismaService } from "../../prisma/prisma.service";
 import { IStorageService, STORAGE_SERVICE } from "../storage/storage.interface";
 import { CreateVehicleDto } from "./dto/create-vehicle.dto";
@@ -121,10 +123,24 @@ export class VehiclesService {
         },
       });
 
+      const rankingScore = computeRankingScore({
+        price: vehicle.price,
+        fipe: vehicle.fipe,
+        views: 0,
+        favorites: 0,
+        photoCount: vehicle.photos.length,
+        hasObs: !!vehicle.obs,
+        year: vehicle.year,
+        km: vehicle.km,
+        publishedAt: isStaff ? now : null,
+        now,
+      });
+
       const listing = await tx.listing.create({
         data: {
           vehicleId: vehicle.id,
           status: listingStatus,
+          rankingScore,
           createdById: user.id,
           ...(isStaff ? { approvedById: user.id, approvedAt: now, publishedAt: now } : {}),
         },
@@ -241,13 +257,27 @@ export class VehiclesService {
     }
 
     const now = new Date();
+    const publishedAt = vehicle.listing.publishedAt ?? now;
+    const rankingScore = computeRankingScore({
+      price: vehicle.price,
+      fipe: vehicle.fipe,
+      views: vehicle.listing.views,
+      favorites: vehicle.listing.favorites,
+      photoCount: vehicle.photos.length,
+      hasObs: !!vehicle.obs,
+      year: vehicle.year,
+      km: vehicle.km,
+      publishedAt,
+      now,
+    });
     const updated = await this.prisma.listing.update({
       where: { id: vehicle.listing.id },
       data: {
         status: "ACTIVE",
         approvedById: user.id,
         approvedAt: now,
-        publishedAt: vehicle.listing.publishedAt ?? now,
+        publishedAt,
+        rankingScore,
       },
       select: { status: true },
     });

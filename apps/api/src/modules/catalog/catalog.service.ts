@@ -308,6 +308,7 @@ export class CatalogService {
         price: true,
         fipe: true,
         city: true,
+        state: true,
         photos: true,
       },
       take: 24,
@@ -325,6 +326,7 @@ export class CatalogService {
         fipe: s.fipe,
         diff: this.calcDiff(s.price, s.fipe),
         city: s.city,
+        state: s.state,
         coverPhoto: s.photos[0] ?? null,
       }))
       .sort((a, b) => a.diff - b.diff)
@@ -346,6 +348,7 @@ export class CatalogService {
             fipe: 0,
             diff: 0,
             city: "",
+            state: "",
             coverPhoto: s.coverPhoto,
             locked: true,
           },

@@ -362,7 +362,7 @@ export default function VehicleDetailPage() {
                       </div>
                       <div className="dt-sim-price">R$ {brl(s.price)}</div>
                       <div className="dt-sim-sub">
-                        {s.year} · {num(s.km)} km · {s.city}
+                        {s.year} · {num(s.km)} km · {s.city} - {s.state}
                       </div>
                     </div>
                     <ChevronRight size={16} className="dt-sim-chev" />

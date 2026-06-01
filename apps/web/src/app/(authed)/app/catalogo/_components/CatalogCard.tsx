@@ -179,7 +179,7 @@ export function CatalogCard({ v, list }: CatalogCardProps) {
           </span>
           <span className="ccard-spec">
             <MapPin size={14} />
-            {v.city}
+            {v.city} - {v.state}
           </span>
         </div>
 

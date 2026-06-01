@@ -40,6 +40,7 @@ export interface SimilarVehicle {
   fipe: number;
   diff: number;
   city: string;
+  state: string;
   coverPhoto: string | null;
   /** True se bloqueado para o plano atual (free). */
   locked: boolean;
