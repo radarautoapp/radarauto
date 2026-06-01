@@ -11,15 +11,16 @@
 
 import {
   ArrowLeft,
-  GripVertical,
-  ImagePlus,
   BarChart3,
   Calendar,
   Car,
   Check,
   ChevronRight,
+  GripVertical,
+  ImagePlus,
   Lock,
   MapPin,
+  Pencil,
   Plus,
   Sparkles,
   Truck,
@@ -64,18 +65,18 @@ import {
   WZ_YEARS,
 } from "./helpers";
 
-const STEP_META: [string, string][] = [
-  ["Marca", "Qual a marca do veículo?"],
-  ["Modelo", "Qual o modelo?"],
-  ["Versão", "Qual a versão?"],
-  ["Ano", "Qual o ano?"],
-  ["Categoria", "Qual a categoria?"],
-  ["Especificações", "Ficha técnica"],
-  ["Localização", "Onde está o veículo?"],
-  ["Opcionais", "Opcionais e entrega"],
-  ["Preço", "Defina o preço"],
-  ["Fotos", "Fotos e finalização"],
-];
+const STEP_META: Record<StepKey, [string, string]> = {
+  brand: ["Marca", "Qual a marca do veículo?"],
+  model: ["Modelo", "Qual o modelo?"],
+  version: ["Versão", "Qual a versão?"],
+  year: ["Ano", "Qual o ano?"],
+  category: ["Categoria", "Qual a categoria?"],
+  specs: ["Especificações", "Ficha técnica"],
+  location: ["Localização", "Onde está o veículo?"],
+  optionals: ["Opcionais", "Opcionais e entrega"],
+  price: ["Preço", "Defina o preço"],
+  photos: ["Fotos", "Fotos e finalização"],
+};
 
 type StepKey =
   | "brand"
@@ -103,11 +104,17 @@ const STEP_KEYS: StepKey[] = [
 ];
 
 export interface VehicleWizardProps {
+  /** Estado inicial do formulário (modo edição). */
+  initialForm?: VehicleFormState;
+  /** URLs das fotos já existentes (modo edição). */
+  initialPhotoUrls?: string[];
+  /** "create" (padrão) ou "edit". */
+  mode?: "create" | "edit";
   /** Cidade/UF da loja (herdadas como default na localização) */
   storeCity?: string;
   storeState?: string;
   onCancel: () => void;
-  onComplete: (form: VehicleFormState, photos: File[]) => Promise<void>;
+  onComplete: (form: VehicleFormState, photos: (File | string)[]) => Promise<void>;
 }
 
 export function VehicleWizard({
@@ -115,8 +122,12 @@ export function VehicleWizard({
   storeState,
   onCancel,
   onComplete,
+  initialForm,
+  initialPhotoUrls,
+  mode = "create",
 }: VehicleWizardProps): JSX.Element {
   const [form, setForm] = useState<VehicleFormState>(() => {
+    if (initialForm) return initialForm;
     const draft = loadDraft();
     if (draft) return draft;
     return {
@@ -129,10 +140,11 @@ export function VehicleWizard({
   const set = <K extends keyof VehicleFormState>(key: K, value: VehicleFormState[K]): void =>
     setForm((p) => ({ ...p, [key]: value }));
 
-  // Autosave a cada mudança
+  // Autosave a cada mudança (só no cadastro novo; edição não usa draft).
   useEffect(() => {
+    if (mode === "edit") return;
     saveDraft(form);
-  }, [form]);
+  }, [form, mode]);
 
   // ---- Dados externos ----
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -152,8 +164,9 @@ export function VehicleWizard({
   const [fipeLoading, setFipeLoading] = useState(false);
 
   // Fotos: ficam como File[] no estado (NAO no autosave/localStorage).
-  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  // Em edição, item pode ser URL existente (string) ou File novo.
+  const [photoFiles, setPhotoFiles] = useState<(File | string)[]>(() => initialPhotoUrls ?? []);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>(() => initialPhotoUrls ?? []);
   const [cropperSrc, setCropperSrc] = useState<string | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -276,7 +289,8 @@ export function VehicleWizard({
     setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
     setPhotoPreviews((prev) => {
       const url = prev[index];
-      if (url) URL.revokeObjectURL(url);
+      // Só revoga objectURL de foto nova (blob:); URLs existentes (http) são reais.
+      if (url && url.startsWith("blob:")) URL.revokeObjectURL(url);
       return prev.filter((_, i) => i !== index);
     });
   };
@@ -361,9 +375,13 @@ export function VehicleWizard({
     }
   };
 
+  // Em edição, só permite alterar fotos, opcionais e preço (o restante define
+  // o veículo e é imutável). No cadastro, usa o fluxo completo.
+  const stepKeys: StepKey[] = mode === "edit" ? ["photos", "optionals", "price"] : STEP_KEYS;
+
   // Busca preço recomendado ao entrar no step de preço
   const wizard = useWizard<StepKey>({
-    steps: STEP_KEYS,
+    steps: stepKeys,
     validateStep,
     onComplete: async () => {
       await onComplete(form, photoFiles);
@@ -391,7 +409,7 @@ export function VehicleWizard({
   }, [wizard.currentStep, form.fipeCents]);
 
   const stepIndex = wizard.stepIndex;
-  const total = STEP_KEYS.length;
+  const total = stepKeys.length;
   const isLast = wizard.isLastStep;
 
   const priceCents = typeof form.priceReais === "number" ? reaisToCents(form.priceReais) : 0;
@@ -448,11 +466,15 @@ export function VehicleWizard({
       </div>
 
       <div className="vwz-title">
-        <div className="micro">{STEP_META[stepIndex]![0]}</div>
-        <h2>{STEP_META[stepIndex]![1]}</h2>
+        <div className="micro">{STEP_META[wizard.currentStep][0]}</div>
+        <h2>{STEP_META[wizard.currentStep][1]}</h2>
       </div>
 
-      <WizardTrack totalSteps={total} activeIndex={stepIndex} icon={Car} />
+      <WizardTrack
+        totalSteps={total}
+        activeIndex={stepIndex}
+        icon={mode === "edit" ? Pencil : Car}
+      />
 
       <div className="vwz-anim" key={stepIndex}>
         {/* STEP 0 — MARCA */}

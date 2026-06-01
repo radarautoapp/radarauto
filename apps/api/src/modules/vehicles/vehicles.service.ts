@@ -32,6 +32,7 @@ import { computeRankingScore } from "../../common/ranking";
 import { PrismaService } from "../../prisma/prisma.service";
 import { IStorageService, STORAGE_SERVICE } from "../storage/storage.interface";
 import { CreateVehicleDto } from "./dto/create-vehicle.dto";
+import { UpdateVehicleDto } from "./dto/update-vehicle.dto";
 
 const VEHICLES_BUCKET = "vehicles";
 const MAX_PHOTOS = 8;
@@ -290,6 +291,189 @@ export class VehiclesService {
     });
 
     return { id: vehicleId, status: updated.status };
+  }
+
+  /**
+   * Carrega um veículo da loja para edição (valida dono). Retorna todos os
+   * campos + as URLs das fotos atuais.
+   */
+  async findOneForEdit(user: SafeUser, vehicleId: string) {
+    const v = await this.prisma.vehicle.findFirst({
+      where: { id: vehicleId, deletedAt: null },
+      include: { listing: { select: { status: true } } },
+    });
+
+    if (!v) {
+      throw new NotFoundException({
+        code: "VEHICLE_NOT_FOUND",
+        message: "Veículo não encontrado.",
+      });
+    }
+    if (v.storeId !== user.storeId) {
+      throw new ForbiddenException({
+        code: "NOT_ALLOWED",
+        message: "Você não tem permissão para editar este veículo.",
+      });
+    }
+
+    return {
+      id: v.id,
+      brand: v.brand,
+      model: v.model,
+      version: v.version,
+      year: v.year,
+      yearModel: v.yearModel,
+      km: v.km,
+      fuel: v.fuel,
+      transm: v.transm,
+      color: v.color,
+      colorHex: v.colorHex,
+      plate: v.plate,
+      category: v.category,
+      price: v.price,
+      fipe: v.fipe,
+      city: v.city,
+      state: v.state,
+      optionals: v.optionals,
+      obs: v.obs,
+      delivery: v.delivery,
+      photos: v.photos,
+      status: v.listing?.status ?? "DRAFT",
+    };
+  }
+
+  /**
+   * Atualiza um veículo da loja (valida dono). As fotos seguem `photoOrder`:
+   * cada item é uma URL existente (manter) ou "new:N" (arquivo novo na posição
+   * N de `newPhotos`). Sobe as novas, remonta o array final e recalcula o score.
+   */
+  async update(
+    user: SafeUser,
+    vehicleId: string,
+    dto: UpdateVehicleDto,
+    newPhotos: UploadedPhoto[],
+  ) {
+    const existing = await this.prisma.vehicle.findFirst({
+      where: { id: vehicleId, deletedAt: null },
+      include: { listing: true },
+    });
+
+    if (!existing) {
+      throw new NotFoundException({
+        code: "VEHICLE_NOT_FOUND",
+        message: "Veículo não encontrado.",
+      });
+    }
+    if (existing.storeId !== user.storeId) {
+      throw new ForbiddenException({
+        code: "NOT_ALLOWED",
+        message: "Você não tem permissão para editar este veículo.",
+      });
+    }
+
+    // Monta o array final de fotos a partir do photoOrder.
+    const currentUrls = new Set(existing.photos);
+    const finalPhotos: string[] = [];
+    // Sobe as fotos novas sob demanda (cache por índice N).
+    const uploadedNew = new Map<number, string>();
+
+    for (const item of dto.photoOrder) {
+      if (item.startsWith("new:")) {
+        const idx = Number(item.slice(4));
+        if (!Number.isInteger(idx) || idx < 0 || idx >= newPhotos.length) {
+          throw new BadRequestException({
+            code: "INVALID_PHOTO_REF",
+            message: "Referência de foto nova inválida.",
+          });
+        }
+        let url = uploadedNew.get(idx);
+        if (!url) {
+          const processed = await this.processPhoto(newPhotos[idx]!.buffer);
+          const key = `${existing.storeId}/${existing.id}/${idx}-${Date.now()}.webp`;
+          const res = await this.storage.upload({
+            key,
+            buffer: processed,
+            contentType: "image/webp",
+            bucket: VEHICLES_BUCKET,
+          });
+          url = res.url;
+          uploadedNew.set(idx, url);
+        }
+        finalPhotos.push(url);
+      } else {
+        // URL existente: só aceita se realmente pertencia ao veículo.
+        if (!currentUrls.has(item)) {
+          throw new BadRequestException({
+            code: "INVALID_PHOTO_REF",
+            message: "Referência de foto inválida.",
+          });
+        }
+        finalPhotos.push(item);
+      }
+    }
+
+    if (finalPhotos.length === 0) {
+      throw new BadRequestException({
+        code: "PHOTOS_REQUIRED",
+        message: "Adicione pelo menos uma foto do veículo.",
+      });
+    }
+    if (finalPhotos.length > MAX_PHOTOS) {
+      throw new BadRequestException({
+        code: "TOO_MANY_PHOTOS",
+        message: `Máximo de ${MAX_PHOTOS} fotos por veículo.`,
+      });
+    }
+
+    const now = new Date();
+    const updated = await this.prisma.vehicle.update({
+      where: { id: existing.id },
+      data: {
+        brand: dto.brand,
+        model: dto.model,
+        version: dto.version,
+        year: dto.year,
+        yearModel: dto.yearModel,
+        km: dto.km,
+        fuel: dto.fuel,
+        transm: dto.transm,
+        color: dto.color,
+        colorHex: dto.colorHex,
+        plate: dto.plate ?? null,
+        category: dto.category,
+        price: dto.price,
+        fipe: dto.fipe,
+        city: dto.city,
+        state: dto.state,
+        optionals: dto.optionals ?? [],
+        obs: dto.obs ?? null,
+        photos: finalPhotos,
+        delivery: dto.delivery ?? false,
+      },
+    });
+
+    // Recalcula o Radar Score com os dados novos.
+    if (existing.listing) {
+      const rankingScore = computeRankingScore({
+        price: updated.price,
+        fipe: updated.fipe,
+        views: existing.listing.views,
+        favorites: existing.listing.favorites,
+        photoCount: updated.photos.length,
+        hasObs: !!updated.obs,
+        year: updated.year,
+        km: updated.km,
+        publishedAt: existing.listing.publishedAt,
+        now,
+      });
+      await this.prisma.listing.update({
+        where: { id: existing.listing.id },
+        data: { rankingScore },
+      });
+    }
+
+    this.logger.log({ msg: "vehicle.updated", vehicleId, by: user.id });
+    return { id: updated.id, photos: finalPhotos };
   }
 
   /**

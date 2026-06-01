@@ -10,7 +10,7 @@
  */
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { LogOut } from "lucide-react";
@@ -36,6 +36,7 @@ export default function AuthedLayout({
   const clearSession = useAuthStore((s) => s.clearSession);
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [store, setStore] = useState<{ name: string; logoUrl: string | null } | null>(null);
@@ -116,7 +117,7 @@ export default function AuthedLayout({
     }
   };
 
-  const pageMeta = inferPageMeta(pathname, navItems);
+  const pageMeta = inferPageMeta(pathname, navItems, searchParams.get("id"));
 
   return (
     <>
@@ -170,9 +171,14 @@ export default function AuthedLayout({
 function inferPageMeta(
   pathname: string | null,
   items: ReturnType<typeof navForRole>,
+  editId?: string | null,
 ): { title: string; subtitle?: string } {
   if (!pathname) return { title: "RadarAuto" };
   if (pathname === "/app") return { title: "Início", subtitle: "Visão geral da sua conta" };
+  // Cadastrar/editar veículo: a mesma rota muda o título conforme o ?id=.
+  if (pathname.startsWith("/app/cadastrar-veiculo")) {
+    return { title: editId ? "Editar veículo" : "Cadastrar veículo" };
+  }
   // 1. Match EXATO de um item do menu (ex: /app/catalogo = listagem "Catálogo").
   const exact = items.find((n) => pathname === n.href);
   if (exact) return { title: exact.label };

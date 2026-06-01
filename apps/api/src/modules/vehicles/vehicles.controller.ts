@@ -29,6 +29,7 @@ import { SafeUser } from "../auth/auth.service";
 import { CurrentUser } from "../../common/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
 import { CreateVehicleDto } from "./dto/create-vehicle.dto";
+import { UpdateVehicleDto } from "./dto/update-vehicle.dto";
 import { VehiclesService } from "./vehicles.service";
 
 const MAX_PHOTOS = 8;
@@ -50,6 +51,11 @@ export class VehiclesController {
   async list(@CurrentUser() user: SafeUser) {
     const vehicles = await this.vehicles.list(user);
     return { vehicles };
+  }
+
+  @Get(":id")
+  async findOne(@CurrentUser() user: SafeUser, @Param("id") id: string) {
+    return this.vehicles.findOneForEdit(user, id);
   }
 
   @Post(":id/approve")
@@ -121,5 +127,48 @@ export class VehiclesController {
     }
 
     return this.vehicles.create(user, dto, photos ?? []);
+  }
+
+  @Patch(":id")
+  @UseInterceptors(
+    FilesInterceptor("photos", MAX_PHOTOS, {
+      limits: { fileSize: MAX_PHOTO_BYTES },
+    }),
+  )
+  async update(
+    @CurrentUser() user: SafeUser,
+    @Param("id") id: string,
+    @Body("data") rawData: string,
+    @UploadedFiles() photos: MulterFile[],
+  ) {
+    if (!rawData) {
+      throw new BadRequestException({
+        code: "MISSING_DATA",
+        message: "Dados do veículo ausentes.",
+      });
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(rawData);
+    } catch {
+      throw new BadRequestException({
+        code: "INVALID_DATA",
+        message: "Dados do veículo em formato inválido.",
+      });
+    }
+
+    const dto = plainToInstance(UpdateVehicleDto, parsed);
+    try {
+      await validateOrReject(dto, { whitelist: true });
+    } catch (errors) {
+      throw new BadRequestException({
+        code: "VALIDATION_FAILED",
+        message: "Há campos inválidos na edição.",
+        details: errors,
+      });
+    }
+
+    return this.vehicles.update(user, id, dto, photos ?? []);
   }
 }
