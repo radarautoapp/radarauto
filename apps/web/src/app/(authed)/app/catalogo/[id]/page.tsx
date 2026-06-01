@@ -39,6 +39,8 @@ import type { VehicleDetail } from "@radar/types";
 import { Badge, Button, Skeleton, TelegramIcon, WhatsAppIcon } from "@radar/ui";
 
 import { toFriendlyError } from "@/lib/error-messages";
+import { leadsApi } from "@/lib/leads-api";
+import { usePageTime } from "@/lib/usePageTime";
 
 import { catalogApi } from "../_lib/catalog-api";
 import { GalleryMain, GalleryThumbs } from "../_components/VehicleGallery";
@@ -50,6 +52,14 @@ export default function VehicleDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = params?.id;
+
+  // Registra a visita ao anúncio (engine de leads, best-effort).
+  useEffect(() => {
+    if (id) void leadsApi.view(id);
+  }, [id]);
+
+  // Mede o tempo de tela (só com aba visível) e envia ao sair.
+  usePageTime(id, (vehicleId, seconds) => leadsApi.time(vehicleId, seconds));
 
   const [v, setV] = useState<VehicleDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -434,12 +444,16 @@ function ContactBlock({
                 href={`https://wa.me/${v.seller.whatsapp.replace(/\D/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => void leadsApi.contact(v.id, "whatsapp")}
               >
                 <WhatsAppIcon size={17} />
                 Chamar no WhatsApp
               </a>
             )}
-            <button className="btn btn-tg dt-btn-block">
+            <button
+              className="btn btn-tg dt-btn-block"
+              onClick={() => void leadsApi.contact(v.id, "telegram")}
+            >
               <TelegramIcon size={17} />
               Chamar no Telegram
             </button>

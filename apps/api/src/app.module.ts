@@ -24,6 +24,7 @@ import { PricingModule } from "./modules/pricing/pricing.module";
 import { LocationsModule } from "./modules/locations/locations.module";
 import { VehiclesModule } from "./modules/vehicles/vehicles.module";
 import { CatalogModule } from "./modules/catalog/catalog.module";
+import { LeadsModule } from "./modules/leads/leads.module";
 import { EmployeesModule } from "./modules/employees/employees.module";
 import { StoresModule } from "./modules/stores/stores.module";
 import { UsersModule } from "./modules/users/users.module";
@@ -34,6 +35,7 @@ import { PrismaModule } from "./prisma/prisma.module";
   imports: [
     VehiclesModule,
     CatalogModule,
+    LeadsModule,
     LocationsModule,
     PricingModule,
     BrandsModule,

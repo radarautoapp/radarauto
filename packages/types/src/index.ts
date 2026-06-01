@@ -21,6 +21,7 @@ export * from "./api/sessions.js";
 export * from "./api/stores.js";
 export * from "./api/employees.js";
 export * from "./api/fipe.js";
+export * from "./api/leads.js";
 export * from "./api/brands.js";
 export * from "./api/pricing.js";
 export * from "./api/locations.js";

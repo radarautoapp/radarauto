@@ -1,0 +1,405 @@
+/* ============================================================
+   Tela de Leads — Engine de qualificação (acordeon premium)
+   ============================================================ */
+
+.leads-page {
+  --hot: #ff6b00;
+  --hot-soft: rgba(255, 107, 0, 0.1);
+  --warm: #f59e0b;
+  --warm-soft: rgba(245, 158, 11, 0.12);
+  --cold: #94a3b8;
+  --cold-soft: rgba(148, 163, 184, 0.12);
+}
+
+/* ---------- Hero de métricas ---------- */
+.leads-hero {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(37, 99, 235, 0.06), transparent 60%),
+    var(--card, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--r-lg, 20px);
+}
+.leads-hero-stat {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex: 1;
+}
+.leads-hero-ico {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.ico-blue {
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary, #2563eb);
+}
+.ico-hot {
+  background: var(--hot-soft);
+  color: var(--hot);
+}
+.ico-green {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success, #10b981);
+}
+.leads-hero-num {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.leads-hero-num strong {
+  font-family: var(--display, "Sora");
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text, #0f172a);
+}
+.leads-hero-num span {
+  font-size: 12px;
+  color: var(--muted, #64748b);
+  margin-top: 1px;
+}
+.leads-hero-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border, #e2e8f0);
+  margin: 4px 0;
+}
+
+/* ---------- Lista ---------- */
+.lead-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.lead-section-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #94a3b8);
+  margin: 14px 4px 2px;
+}
+
+/* ---------- Card do veículo (acordeon) ---------- */
+.lead-card {
+  position: relative;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--r, 16px);
+  overflow: hidden;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+/* Faixa lateral por temperatura */
+.lead-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--cold);
+  transition: background 0.18s ease;
+}
+.lead-card.heat-hot::before {
+  background: linear-gradient(180deg, var(--hot), #ff9248);
+}
+.lead-card.heat-warm::before {
+  background: var(--warm);
+}
+.lead-card.empty {
+  opacity: 0.72;
+}
+.lead-card.empty::before {
+  background: var(--border, #e2e8f0);
+}
+.lead-card.heat-hot {
+  border-color: rgba(255, 107, 0, 0.32);
+  box-shadow: 0 4px 20px -8px rgba(255, 107, 0, 0.3);
+}
+.lead-card.heat-hot:hover {
+  box-shadow: 0 8px 28px -10px rgba(255, 107, 0, 0.42);
+}
+.lead-card:not(.empty):hover {
+  transform: translateY(-1px);
+}
+.lead-card.open {
+  border-color: var(--primary, #2563eb);
+}
+
+.lead-card-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 18px 15px 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.lead-card-head:disabled {
+  cursor: default;
+}
+.lead-card-photo {
+  width: 66px;
+  height: 50px;
+  border-radius: 11px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-2, #f1f5f9);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+.lead-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lead-card-photo-empty {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+.lead-card-info {
+  flex: 1;
+  min-width: 0;
+}
+.lead-card-title {
+  font-family: var(--display, "Sora");
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text, #0f172a);
+  letter-spacing: -0.01em;
+}
+.lead-card-sub {
+  font-size: 12.5px;
+  color: var(--muted, #64748b);
+  margin-top: 3px;
+}
+.lead-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.lead-hot-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--hot);
+  background: var(--hot-soft);
+  padding: 5px 11px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.lead-count-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  background: var(--bg-2, #f1f5f9);
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+.lead-card-chev {
+  color: var(--muted, #94a3b8);
+  transition: transform 0.22s ease;
+  margin-left: 2px;
+}
+.lead-card.open .lead-card-chev {
+  transform: rotate(180deg);
+  color: var(--primary, #2563eb);
+}
+
+/* ---------- Corpo: linhas de lead ---------- */
+.lead-card-body {
+  border-top: 1px solid var(--border, #e2e8f0);
+  background: linear-gradient(180deg, rgba(241, 245, 249, 0.4), transparent 40px);
+  animation: leadBodyIn 0.26s ease;
+}
+@keyframes leadBodyIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lead-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 18px 14px 20px;
+  opacity: 0;
+  animation: leadRowIn 0.34s ease forwards;
+}
+@keyframes leadRowIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.lead-row + .lead-row {
+  border-top: 1px solid var(--bg-2, #eef2f6);
+}
+.lead-row-body {
+  flex: 1;
+  min-width: 0;
+}
+.lead-row-line {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+.lead-name {
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--text, #0f172a);
+}
+.lead-temp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.lead-temp-pill.temp-hot {
+  color: var(--hot);
+  background: var(--hot-soft);
+}
+.lead-temp-pill.temp-warm {
+  color: var(--warm);
+  background: var(--warm-soft);
+}
+.lead-temp-pill.temp-cold {
+  color: var(--cold);
+  background: var(--cold-soft);
+}
+.lead-lastseen {
+  font-size: 11.5px;
+  color: var(--muted, #94a3b8);
+  margin-left: auto;
+}
+
+/* Termômetro de pontos */
+.lead-meter {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--bg-2, #eef2f6);
+  overflow: hidden;
+  margin-bottom: 9px;
+}
+.lead-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lead-meter-fill.temp-hot {
+  background: linear-gradient(90deg, #ff9248, var(--hot));
+}
+.lead-meter-fill.temp-warm {
+  background: linear-gradient(90deg, #fbbf24, var(--warm));
+}
+.lead-meter-fill.temp-cold {
+  background: var(--cold);
+}
+
+.lead-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.lead-signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted, #64748b);
+}
+.sig-fav {
+  color: #e11d48;
+}
+.sig-wa {
+  color: #25d366;
+  font-weight: 600;
+}
+.sig-tg {
+  color: #229ed9;
+  font-weight: 600;
+}
+
+/* Botão de ligar */
+.lead-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 11px;
+  background: var(--primary, #2563eb);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  box-shadow: 0 2px 10px -2px rgba(37, 99, 235, 0.5);
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease;
+}
+.lead-call:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px -3px rgba(37, 99, 235, 0.6);
+}
+.lead-call:active {
+  transform: translateY(0);
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 640px) {
+  .leads-hero {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 18px;
+  }
+  .leads-hero-divider {
+    display: none;
+  }
+  .lead-row {
+    flex-wrap: wrap;
+  }
+  .lead-call {
+    width: 100%;
+    justify-content: center;
+    margin-left: 55px;
+  }
+}
