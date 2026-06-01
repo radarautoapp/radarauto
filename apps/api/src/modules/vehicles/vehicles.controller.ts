@@ -11,8 +11,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFiles,
   UseGuards,
@@ -53,6 +55,20 @@ export class VehiclesController {
   @Post(":id/approve")
   async approve(@CurrentUser() user: SafeUser, @Param("id") id: string) {
     return this.vehicles.approve(user, id);
+  }
+
+  @Patch(":id/status")
+  async setStatus(
+    @CurrentUser() user: SafeUser,
+    @Param("id") id: string,
+    @Body("action") action: "pause" | "activate",
+  ) {
+    return this.vehicles.setStatus(user, id, action);
+  }
+
+  @Delete(":id")
+  async remove(@CurrentUser() user: SafeUser, @Param("id") id: string) {
+    return this.vehicles.remove(user, id);
   }
 
   @Post()

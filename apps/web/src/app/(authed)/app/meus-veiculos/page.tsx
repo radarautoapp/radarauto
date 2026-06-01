@@ -6,12 +6,12 @@
  */
 "use client";
 
-import { AlertCircle, Car, Plus } from "lucide-react";
+import { AlertCircle, Car, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import type { VehicleListItem } from "@radar/types";
-import { Button, EmptyState, Skeleton } from "@radar/ui";
+import { Button, ConfirmModal, EmptyState, Skeleton } from "@radar/ui";
 
 import { toFriendlyError } from "@/lib/error-messages";
 import { useAuthStore } from "@/stores/auth.store";
@@ -38,6 +38,8 @@ export default function MeusVeiculosPage(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<VehicleListItem | null>(null);
 
   const load = useCallback(async (opts?: { silent?: boolean }): Promise<void> => {
     if (!opts?.silent) setLoading(true);
@@ -65,6 +67,54 @@ export default function MeusVeiculosPage(): JSX.Element {
       setError(toFriendlyError(err));
     } finally {
       setApprovingId(null);
+    }
+  };
+
+  const onEdit = (id: string): void => {
+    router.push(`/app/cadastrar-veiculo?id=${id}`);
+  };
+
+  const onTogglePause = async (v: VehicleListItem): Promise<void> => {
+    setBusyId(v.id);
+    setError(null);
+    try {
+      const action = v.status === "ACTIVE" ? "pause" : "activate";
+      await vehiclesApi.setStatus(v.id, action);
+      await load({ silent: true });
+    } catch (err) {
+      setError(toFriendlyError(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const onToggleSold = async (v: VehicleListItem): Promise<void> => {
+    setBusyId(v.id);
+    setError(null);
+    try {
+      const action = v.status === "SOLD" ? "unsell" : "sell";
+      await vehiclesApi.setStatus(v.id, action);
+      await load({ silent: true });
+    } catch (err) {
+      setError(toFriendlyError(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const onConfirmDelete = async (): Promise<void> => {
+    if (!deleteTarget) return;
+    const id = deleteTarget.id;
+    setBusyId(id);
+    setDeleteTarget(null);
+    setError(null);
+    try {
+      await vehiclesApi.remove(id);
+      await load({ silent: true });
+    } catch (err) {
+      setError(toFriendlyError(err));
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -142,13 +192,33 @@ export default function MeusVeiculosPage(): JSX.Element {
                   vehicle={v}
                   canApprove={canApprove}
                   approving={approvingId === v.id}
+                  busy={busyId === v.id}
                   onApprove={() => void onApprove(v.id)}
+                  onEdit={() => onEdit(v.id)}
+                  onTogglePause={() => void onTogglePause(v)}
+                  onToggleSold={() => void onToggleSold(v)}
+                  onDelete={() => setDeleteTarget(v)}
                 />
               ))}
             </div>
           )}
         </>
       )}
+      <ConfirmModal
+        open={!!deleteTarget}
+        title="Excluir veículo?"
+        description={
+          deleteTarget
+            ? `"${deleteTarget.brand} ${deleteTarget.model}" será removido dos seus anúncios. Esta ação não pode ser desfeita.`
+            : ""
+        }
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        variant="danger"
+        icon={Trash2}
+        onConfirm={() => void onConfirmDelete()}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

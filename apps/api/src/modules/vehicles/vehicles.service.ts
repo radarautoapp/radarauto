@@ -15,6 +15,7 @@
  */
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
   Inject,
@@ -289,6 +290,123 @@ export class VehiclesService {
     });
 
     return { id: vehicleId, status: updated.status };
+  }
+
+  /**
+   * Pausa ou reativa um anúncio (ACTIVE ↔ INACTIVE). Só o dono da loja.
+   * Não permite pausar anúncios PENDING/SOLD/BLOCKED.
+   */
+  async setStatus(
+    user: SafeUser,
+    vehicleId: string,
+    action: "pause" | "activate" | "sell" | "unsell",
+  ) {
+    const vehicle = await this.prisma.vehicle.findFirst({
+      where: { id: vehicleId, deletedAt: null },
+      include: { listing: true },
+    });
+
+    if (!vehicle || !vehicle.listing) {
+      throw new NotFoundException({
+        code: "VEHICLE_NOT_FOUND",
+        message: "Veículo não encontrado.",
+      });
+    }
+
+    if (vehicle.storeId !== user.storeId) {
+      throw new ForbiddenException({
+        code: "NOT_ALLOWED",
+        message: "Você não tem permissão para alterar este veículo.",
+      });
+    }
+
+    const current = vehicle.listing.status;
+
+    // Regras de transição por ação.
+    if (action === "pause" && current !== "ACTIVE") {
+      throw new ConflictException({
+        code: "INVALID_STATUS",
+        message: "Apenas anúncios ativos podem ser pausados.",
+      });
+    }
+    if (action === "activate" && current !== "INACTIVE") {
+      throw new ConflictException({
+        code: "INVALID_STATUS",
+        message: "Apenas anúncios pausados podem ser reativados.",
+      });
+    }
+    if (action === "sell" && current !== "ACTIVE" && current !== "INACTIVE") {
+      throw new ConflictException({
+        code: "INVALID_STATUS",
+        message: "Apenas anúncios ativos ou pausados podem ser marcados como vendidos.",
+      });
+    }
+    if (action === "unsell" && current !== "SOLD") {
+      throw new ConflictException({
+        code: "INVALID_STATUS",
+        message: "Apenas anúncios vendidos podem ser revertidos.",
+      });
+    }
+
+    const now = new Date();
+    const transitions = {
+      pause: { status: "INACTIVE", soldAt: null },
+      activate: { status: "ACTIVE", soldAt: null },
+      sell: { status: "SOLD", soldAt: now },
+      unsell: { status: "ACTIVE", soldAt: null },
+    } as const;
+    const next = transitions[action];
+
+    const updated = await this.prisma.listing.update({
+      where: { id: vehicle.listing.id },
+      data: { status: next.status, soldAt: next.soldAt },
+      select: { status: true },
+    });
+
+    this.logger.log({ msg: "vehicle.status_changed", vehicleId, action, by: user.id });
+    return { status: updated.status };
+  }
+
+  /**
+   * Exclui um anúncio (soft delete via deletedAt). Só o dono da loja.
+   * Marca o Vehicle e o Listing como deletados.
+   */
+  async remove(user: SafeUser, vehicleId: string) {
+    const vehicle = await this.prisma.vehicle.findFirst({
+      where: { id: vehicleId, deletedAt: null },
+      include: { listing: true },
+    });
+
+    if (!vehicle) {
+      throw new NotFoundException({
+        code: "VEHICLE_NOT_FOUND",
+        message: "Veículo não encontrado.",
+      });
+    }
+
+    if (vehicle.storeId !== user.storeId) {
+      throw new ForbiddenException({
+        code: "NOT_ALLOWED",
+        message: "Você não tem permissão para excluir este veículo.",
+      });
+    }
+
+    const now = new Date();
+    await this.prisma.$transaction(async (tx) => {
+      if (vehicle.listing) {
+        await tx.listing.update({
+          where: { id: vehicle.listing.id },
+          data: { deletedAt: now },
+        });
+      }
+      await tx.vehicle.update({
+        where: { id: vehicle.id },
+        data: { deletedAt: now },
+      });
+    });
+
+    this.logger.log({ msg: "vehicle.removed", vehicleId, by: user.id });
+    return { deleted: true };
   }
 
   /** Normaliza foto: 4:3, cover, otimizada em webp. */

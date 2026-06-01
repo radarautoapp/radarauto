@@ -4,7 +4,12 @@
  * Cria veículo via multipart (dados JSON + fotos).
  * Usa fetch direto (não apiFetch) porque envia FormData, não JSON.
  */
-import type { ApproveVehicleResponse, ListVehiclesResponse } from "@radar/types";
+import type {
+  ApproveVehicleResponse,
+  ListVehiclesResponse,
+  RemoveVehicleResponse,
+  SetVehicleStatusResponse,
+} from "@radar/types";
 
 import { apiFetch, tokenStorage } from "@/lib/api";
 
@@ -46,6 +51,22 @@ export const vehiclesApi = {
   async approve(id: string): Promise<ApproveVehicleResponse> {
     return apiFetch<ApproveVehicleResponse>(`/vehicles/${id}/approve`, {
       method: "POST",
+    });
+  },
+
+  async setStatus(
+    id: string,
+    action: "pause" | "activate" | "sell" | "unsell",
+  ): Promise<SetVehicleStatusResponse> {
+    return apiFetch<SetVehicleStatusResponse>(`/vehicles/${id}/status`, {
+      method: "PATCH",
+      body: { action },
+    });
+  },
+
+  async remove(id: string): Promise<RemoveVehicleResponse> {
+    return apiFetch<RemoveVehicleResponse>(`/vehicles/${id}`, {
+      method: "DELETE",
     });
   },
 

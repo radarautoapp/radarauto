@@ -5,14 +5,26 @@
  *  - Foto de capa (ou placeholder)
  *  - Marca/modelo, ano, km, cidade
  *  - Preço + badge de status (Ativo / Aguardando aprovação / etc.)
- *  - Botão "Aprovar" inline quando PENDING e o usuário é lojista
+ *  - Barra de ações em ícones: editar, pausar/reativar, excluir.
+ *  - Aprovar em destaque quando PENDING e o usuário é lojista.
  */
 "use client";
 
-import { Car, Check, MapPin, Eye } from "lucide-react";
+import {
+  Car,
+  Check,
+  DollarSign,
+  Eye,
+  MapPin,
+  Pause,
+  Pencil,
+  Play,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
 
 import type { VehicleListItem } from "@radar/types";
-import { Badge, Button } from "@radar/ui";
+import { Badge } from "@radar/ui";
 
 function brl(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", {
@@ -42,17 +54,34 @@ export interface VehicleCardProps {
   vehicle: VehicleListItem;
   canApprove: boolean;
   approving: boolean;
+  busy: boolean;
   onApprove: () => void;
+  onEdit: () => void;
+  onTogglePause: () => void;
+  onToggleSold: () => void;
+  onDelete: () => void;
 }
 
 export function VehicleCard({
   vehicle,
   canApprove,
   approving,
+  busy,
   onApprove,
+  onEdit,
+  onTogglePause,
+  onToggleSold,
+  onDelete,
 }: VehicleCardProps): JSX.Element {
   const meta = STATUS_META[vehicle.status] ?? STATUS_META.DRAFT!;
   const showApprove = canApprove && vehicle.pendingApproval;
+  const isActive = vehicle.status === "ACTIVE";
+  const isPaused = vehicle.status === "INACTIVE";
+  // Pausar/reativar só faz sentido para anúncios ativos ou pausados.
+  const canTogglePause = isActive || isPaused;
+  const isSold = vehicle.status === "SOLD";
+  // Vender: a partir de ativo/pausado. Reverter: quando vendido.
+  const canSell = isActive || isPaused;
 
   return (
     <div className="vcard">
@@ -108,17 +137,65 @@ export function VehicleCard({
             <div className="vcard-approve-info">
               Cadastrado por <strong>{vehicle.createdByName}</strong>
             </div>
-            <Button
-              variant="primary"
-              icon={Check}
+            <button
+              type="button"
+              className="vcard-approve-btn"
               onClick={onApprove}
-              loading={approving}
               disabled={approving}
             >
-              Aprovar
-            </Button>
+              <Check size={16} />
+              {approving ? "Aprovando..." : "Aprovar"}
+            </button>
           </div>
         )}
+
+        <div className="vcard-actions">
+          <button
+            type="button"
+            className="vcard-act"
+            title="Editar"
+            aria-label="Editar"
+            onClick={onEdit}
+            disabled={busy}
+          >
+            <Pencil size={16} />
+          </button>
+          {canTogglePause && (
+            <button
+              type="button"
+              className="vcard-act"
+              title={isActive ? "Pausar anúncio" : "Reativar anúncio"}
+              aria-label={isActive ? "Pausar" : "Reativar"}
+              onClick={onTogglePause}
+              disabled={busy}
+            >
+              {isActive ? <Pause size={16} /> : <Play size={16} />}
+            </button>
+          )}
+          <button
+            type="button"
+            className="vcard-act vcard-act-danger"
+            title="Excluir"
+            aria-label="Excluir"
+            onClick={onDelete}
+            disabled={busy}
+          >
+            <Trash2 size={16} />
+          </button>
+
+          {(canSell || isSold) && (
+            <button
+              type="button"
+              className={`vcard-act vcard-act-sold${isSold ? " on" : ""}`}
+              title={isSold ? "Reverter venda" : "Marcar como vendido"}
+              aria-label={isSold ? "Reverter venda" : "Marcar como vendido"}
+              onClick={onToggleSold}
+              disabled={busy}
+            >
+              {isSold ? <RotateCcw size={16} /> : <DollarSign size={16} />}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

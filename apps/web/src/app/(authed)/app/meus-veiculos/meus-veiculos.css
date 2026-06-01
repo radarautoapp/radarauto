@@ -238,3 +238,83 @@
     display: none;
   }
 }
+
+/* ===== Barra de ações (ícones) ===== */
+.vcard-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+.vcard-act {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--card, #fff);
+  color: var(--muted, #64748b);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.vcard-act:hover:not(:disabled) {
+  background: var(--bg-2, #f1f5f9);
+  color: var(--text, #0f172a);
+  border-color: var(--primary, #2563eb);
+}
+.vcard-act:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.vcard-act-danger:hover:not(:disabled) {
+  background: var(--danger-t, rgba(239, 68, 68, 0.1));
+  color: var(--danger, #ef4444);
+  border-color: var(--danger, #ef4444);
+}
+
+/* Botão aprovar (substitui o Button grande, mantém destaque) */
+.vcard-approve-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary, #2563eb);
+  color: #fff;
+  font-family: var(--font, inherit);
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.vcard-approve-btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+.vcard-approve-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botão "marcar como vendido" — empurrado para a direita, verde */
+.vcard-act-sold {
+  margin-left: auto;
+}
+.vcard-act-sold:hover:not(:disabled) {
+  background: var(--success-t, rgba(16, 185, 129, 0.12));
+  color: var(--success, #10b981);
+  border-color: var(--success, #10b981);
+}
+/* Quando já vendido, fica verde preenchido (estado ativo) */
+.vcard-act-sold.on {
+  background: var(--success, #10b981);
+  color: #fff;
+  border-color: var(--success, #10b981);
+}
+.vcard-act-sold.on:hover:not(:disabled) {
+  filter: brightness(1.05);
+  background: var(--success, #10b981);
+  color: #fff;
+}

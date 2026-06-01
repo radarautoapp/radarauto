@@ -46,3 +46,11 @@ export interface ApproveVehicleResponse {
   id: string;
   status: ListingStatusDto;
 }
+
+export interface SetVehicleStatusResponse {
+  status: ListingStatusDto;
+}
+
+export interface RemoveVehicleResponse {
+  deleted: boolean;
+}
