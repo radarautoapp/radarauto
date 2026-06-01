@@ -10,6 +10,7 @@
 @import "./(authed)/app/cadastrar-veiculo/_wizard/vehicle-photos.css";
 @import "./(authed)/app/meus-veiculos/meus-veiculos.css";
 @import "./catalog.css";
+@import "./vehicle-detail.css";
 
 @tailwind base;
 @tailwind components;

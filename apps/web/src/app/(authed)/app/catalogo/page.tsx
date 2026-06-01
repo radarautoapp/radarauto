@@ -339,12 +339,12 @@ export default function CatalogPage() {
           ) : (
             <>
               <div className={`catalog-grid${view === "list" ? " catalog-grid-list" : ""}`}>
-                {data?.items.map((v) => (
-                  <CatalogCard key={v.id} v={v} list={view === "list"} />
+                {data?.items.map((v, idx) => (
+                  <CatalogCard key={v.id || `locked-${idx}`} v={v} list={view === "list"} />
                 ))}
               </div>
 
-              {totalPages > 1 && (
+              {data?.premium && totalPages > 1 && (
                 <Pagination page={page} totalPages={totalPages} onChange={setPage} />
               )}
             </>

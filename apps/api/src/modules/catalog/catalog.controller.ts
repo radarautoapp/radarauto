@@ -1,15 +1,18 @@
 /**
  * CatalogController
  *
- * GET /catalog — vitrine pública de veículos (Listings ACTIVE de todas as
- * lojas). Aceita filtros, ordenação e paginação via query string.
+ * GET /catalog     — vitrine pública de veículos (filtros/sort/paginação).
+ * GET /catalog/:id — detalhe de um veículo (dados condicionados ao plano).
  *
  * Autenticado (qualquer role logado pode navegar o catálogo).
  */
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 
-import type { CatalogResponse } from "@radar/types";
+import type { CatalogResponse, VehicleDetailResponse } from "@radar/types";
 
+import { SafeUser } from "../auth/auth.service";
+
+import { CurrentUser } from "../../common/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
 import { CatalogQueryDto } from "./dto/catalog-query.dto";
 import { CatalogService } from "./catalog.service";
@@ -20,7 +23,12 @@ export class CatalogController {
   constructor(private readonly catalog: CatalogService) {}
 
   @Get()
-  list(@Query() query: CatalogQueryDto): Promise<CatalogResponse> {
-    return this.catalog.list(query);
+  list(@CurrentUser() user: SafeUser, @Query() query: CatalogQueryDto): Promise<CatalogResponse> {
+    return this.catalog.list(user, query);
+  }
+
+  @Get(":id")
+  detail(@CurrentUser() user: SafeUser, @Param("id") id: string): Promise<VehicleDetailResponse> {
+    return this.catalog.detail(user, id);
   }
 }

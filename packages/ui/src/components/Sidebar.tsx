@@ -28,6 +28,7 @@ export interface SidebarUser {
   initials: string;
   roleLabel: string;
   roleIcon?: ComponentType<{ size?: number; color?: string }>;
+  imageUrl?: string | null;
 }
 
 export interface SidebarProps {
@@ -87,7 +88,7 @@ export function Sidebar({
       </div>
 
       <div className="sb-user">
-        <Avatar initials={user.initials} size={38} />
+        <Avatar initials={user.initials} imageUrl={user.imageUrl} size={38} rounded="full" />
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontWeight: 600, fontSize: 14 }}>{user.name}</div>
           <div className="ra-flex ra-center" style={{ gap: 6, marginTop: 2 }}>

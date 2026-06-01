@@ -61,6 +61,8 @@ export interface CatalogItem {
   views: number;
   storeId: string;
   storeName: string;
+  /** True se o card está bloqueado para o plano atual (free). */
+  locked: boolean;
 }
 
 /** Faceta de marca (para o filtro de marcas com contagem). */
@@ -72,6 +74,10 @@ export interface CatalogBrandFacet {
 /** Resposta paginada do catálogo. */
 export interface CatalogResponse {
   items: CatalogItem[];
+  /** True se o usuário tem acesso premium (vê tudo). */
+  premium: boolean;
+  /** Quantos itens estão bloqueados (free). */
+  lockedCount: number;
   total: number;
   page: number;
   pageSize: number;

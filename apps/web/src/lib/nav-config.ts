@@ -51,6 +51,7 @@ export const ROLE_META: Record<
  */
 export const SUB_ROUTES: { prefix: string; parentId: string; title: string }[] = [
   { prefix: "/app/cadastrar-veiculo", parentId: "mine", title: "Cadastrar veículo" },
+  { prefix: "/app/catalogo", parentId: "vehicles", title: "Detalhes do Veículo" },
 ];
 
 export function navForRole(role: UserRole): NavConfigItem[] {

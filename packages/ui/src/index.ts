@@ -22,6 +22,9 @@ export type { ButtonProps } from "./components/Button";
 export { Card } from "./components/Card";
 export type { CardProps } from "./components/Card";
 
+export { ConfirmModal } from "./components/ConfirmModal";
+export type { ConfirmModalProps } from "./components/ConfirmModal";
+
 export { ChoiceCard } from "./components/ChoiceCard";
 export type { ChoiceCardProps } from "./components/ChoiceCard";
 
@@ -54,6 +57,8 @@ export { PasswordInput } from "./components/PasswordInput";
 export type { PasswordInputProps } from "./components/PasswordInput";
 export { WhatsAppIcon } from "./components/icons/WhatsAppIcon";
 export type { WhatsAppIconProps } from "./components/icons/WhatsAppIcon";
+export { TelegramIcon } from "./components/icons/TelegramIcon";
+export type { TelegramIconProps } from "./components/icons/TelegramIcon";
 export { useWizard } from "./components/useWizard";
 export type { WizardApi, WizardDirection, UseWizardOptions } from "./components/useWizard";
 export { WizardShell } from "./components/WizardShell";

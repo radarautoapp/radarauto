@@ -116,7 +116,7 @@
 .usr-pop-item{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:transparent;border:none;cursor:pointer;font-size:13.5px;color:var(--text);text-align:left;transition:background .12s;}
 .usr-pop-item:hover{background:var(--bg-2);}
 .usr-pop-item.danger{color:var(--danger);border-top:1px solid var(--border);}
-.content{padding:26px 32px 90px;max-width:1320px;}
+.content{padding:12px 12px 60px;max-width:1320px;}
 .top-search{width:260px;}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font);font-weight:600;font-size:14px;border-radius:13px;border:1px solid transparent;cursor:pointer;transition:all .18s ease;white-space:nowrap;padding:12px 18px;line-height:1;}
@@ -1116,4 +1116,74 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
   display: flex;
   justify-content: flex-end;
   margin-bottom: 16px;
+}
+
+/* ===== ConfirmModal ===== */
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: confirm-fade 0.18s ease;
+}
+@keyframes confirm-fade {
+  from {
+    opacity: 0;
+  }
+}
+.confirm-modal {
+  background: var(--card, #fff);
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+  animation: confirm-pop 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes confirm-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+}
+.confirm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+}
+.confirm-icon-primary {
+  background: var(--primary-t, rgba(37, 99, 235, 0.1));
+  color: var(--primary, #2563eb);
+}
+.confirm-icon-danger {
+  background: var(--danger-t, rgba(239, 68, 68, 0.1));
+  color: var(--danger, #ef4444);
+}
+.confirm-title {
+  font-family: var(--display, "Sora");
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+.confirm-desc {
+  font-size: 14px;
+  color: var(--muted, #64748b);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.confirm-actions > * {
+  flex: 1;
 }

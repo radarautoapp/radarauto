@@ -546,6 +546,12 @@
   box-shadow: 0 4px 12px rgba(255, 107, 0, 0.4);
   font-weight: 700;
 }
+.ccard-disc {
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
 .ccard-delivery {
   width: 30px;
   height: 30px;
@@ -646,6 +652,17 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 14px;
+}
+.ccard-foot-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--success-t, rgba(16, 185, 129, 0.12));
+  color: var(--success, #10b981);
+  font-size: 12px;
+  font-weight: 600;
 }
 .ccard-score {
   display: inline-flex;
@@ -823,4 +840,62 @@
   .ccard-version {
     display: none;
   }
+}
+
+/* ===== Card bloqueado (free): blur + overlay Premium ===== */
+.ccard-locked {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+.ccard-locked-content {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ccard-locked-over {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.86));
+}
+.ccard-locked-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--trending-t, rgba(255, 107, 0, 0.12));
+  color: var(--trending, #ff6b00);
+  display: grid;
+  place-items: center;
+}
+.ccard-locked-title {
+  font-family: var(--display, "Sora");
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text, #0f172a);
+}
+.ccard-locked-sub {
+  font-size: 12px;
+  color: var(--muted, #64748b);
+  max-width: 200px;
+  line-height: 1.4;
+}
+.ccard-locked-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: var(--primary, #2563eb);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
 }

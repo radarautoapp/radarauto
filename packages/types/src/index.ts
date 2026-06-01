@@ -26,3 +26,4 @@ export * from "./api/pricing.js";
 export * from "./api/locations.js";
 export * from "./api/vehicles.js";
 export * from "./api/catalog.js";
+export * from "./api/vehicle-detail.js";

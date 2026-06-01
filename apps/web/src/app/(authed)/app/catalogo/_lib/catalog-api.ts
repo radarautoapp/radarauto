@@ -2,9 +2,10 @@
  * catalog-api.ts — cliente do catálogo público.
  *
  * Monta a query string a partir dos filtros/sort/paginação e chama
- * GET /catalog. Usa apiFetch (JSON autenticado).
+ * GET /catalog. detail() busca um veículo por id (GET /catalog/:id).
+ * Usa apiFetch (JSON autenticado).
  */
-import type { CatalogQuery, CatalogResponse } from "@radar/types";
+import type { CatalogQuery, CatalogResponse, VehicleDetailResponse } from "@radar/types";
 
 import { apiFetch } from "@/lib/api";
 
@@ -45,5 +46,9 @@ export const catalogApi = {
     return apiFetch<CatalogResponse>(`/catalog${buildQueryString(query)}`, {
       method: "GET",
     });
+  },
+
+  detail(id: string): Promise<VehicleDetailResponse> {
+    return apiFetch<VehicleDetailResponse>(`/catalog/${id}`, { method: "GET" });
   },
 };
