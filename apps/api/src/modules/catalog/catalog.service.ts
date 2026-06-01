@@ -14,6 +14,7 @@
  */
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import { computeFeedScore } from "../../common/feed-score";
 
 import type {
   CatalogItem,
@@ -62,7 +63,8 @@ const vehicleSelect = {
   optionals: true,
   storeId: true,
   store: { select: { name: true } },
-  listing: { select: { rankingScore: true, views: true } },
+  createdAt: true,
+  listing: { select: { rankingScore: true, views: true, publishedAt: true } },
 } satisfies Prisma.VehicleSelect;
 
 type VehicleRow = Prisma.VehicleGetPayload<{ select: typeof vehicleSelect }>;
@@ -176,12 +178,22 @@ export class CatalogService {
 
   /** Ordenação em memória (espelha buildOrderBy) — necessária por causa do diff. */
   private sortRows(rows: VehicleRow[], sort?: CatalogSort): VehicleRow[] {
-    const score = (v: VehicleRow) => v.listing?.rankingScore ?? 0;
+    const now = new Date();
+    // Relevância democrática: recência domina, Radar Score modula.
+    const feed = (v: VehicleRow) =>
+      computeFeedScore({
+        rankingScore: v.listing?.rankingScore ?? 0,
+        publishedAt: v.listing?.publishedAt ?? null,
+        createdAt: v.createdAt,
+        now,
+      });
+    // Data de publicação efetiva (cai para createdAt quando ausente).
+    const publishedAt = (v: VehicleRow) => (v.listing?.publishedAt ?? v.createdAt).getTime();
     const cmp: Record<CatalogSort, (a: VehicleRow, b: VehicleRow) => number> = {
       price_asc: (a, b) => a.price - b.price,
       price_desc: (a, b) => b.price - a.price,
-      recent: (a, b) => score(b) - score(a),
-      relevance: (a, b) => score(b) - score(a),
+      recent: (a, b) => publishedAt(b) - publishedAt(a),
+      relevance: (a, b) => feed(b) - feed(a),
     };
     const fn = cmp[sort ?? "relevance"] ?? cmp.relevance;
     return [...rows].sort(fn);
