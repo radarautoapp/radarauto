@@ -208,7 +208,7 @@ export default function VehicleDetailPage() {
             <SpecTile icon={Palette} label="Cor" value={v.color} colorHex={v.colorHex} />
             <SpecTile icon={Car} label="Categoria" value={v.category} />
             <SpecTile icon={MapPin} label="Local" value={`${v.city} (${v.state})`} />
-            <SpecTile icon={Tag} label="Placa" value={v.plate ? maskPlate(v.plate) : "—"} />
+            <SpecTile icon={Tag} label="Final da placa" value={v.plate ? v.plate : "—"} />
           </div>
         </div>
 
@@ -583,10 +583,4 @@ function maskPhone(phone: string): string {
   if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
   if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
   return phone;
-}
-
-/** Mascara final da placa (LGPD-ish): ABC1D23 → ABC1•••. */
-function maskPlate(plate: string): string {
-  if (plate.length <= 4) return plate;
-  return plate.slice(0, 4) + "•••";
 }

@@ -7,7 +7,16 @@
  * do array de uploads). Permite manter, remover, adicionar e reordenar fotos.
  */
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsInt, IsOptional, IsString, Min, MinLength } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  IsString,
+  Matches,
+  Min,
+  MinLength,
+} from "class-validator";
 
 export class UpdateVehicleDto {
   @IsString()
@@ -50,6 +59,7 @@ export class UpdateVehicleDto {
 
   @IsOptional()
   @IsString()
+  @Matches(/^[0-9]$/, { message: "O final da placa deve ser um único dígito (0-9)." })
   plate?: string;
 
   @IsString()

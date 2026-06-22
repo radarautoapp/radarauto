@@ -707,12 +707,14 @@ export function VehicleWizard({
                 <KmInput value={form.km} onChange={(v) => set("km", v)} placeholder="48.000" />
               </div>
               <div>
-                <label className="lbl">Placa (opcional)</label>
+                <label className="lbl">Final da placa (opcional)</label>
                 <input
                   className="inp"
-                  placeholder="ABC-1D23"
+                  placeholder="Ex: 7"
+                  inputMode="numeric"
+                  maxLength={1}
                   value={form.plate}
-                  onChange={(e) => set("plate", e.target.value.toUpperCase())}
+                  onChange={(e) => set("plate", e.target.value.replace(/\D/g, "").slice(0, 1))}
                 />
               </div>
             </div>
