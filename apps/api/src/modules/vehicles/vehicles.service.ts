@@ -28,6 +28,7 @@ import sharp from "sharp";
 import { SafeUser } from "../auth/auth.service";
 
 import { computeRankingScore } from "../../common/ranking";
+import { listingExpiresAt } from "../../common/listing-ttl";
 
 import { PrismaService } from "../../prisma/prisma.service";
 import { IStorageService, STORAGE_SERVICE } from "../storage/storage.interface";
@@ -144,7 +145,14 @@ export class VehiclesService {
           status: listingStatus,
           rankingScore,
           createdById: user.id,
-          ...(isStaff ? { approvedById: user.id, approvedAt: now, publishedAt: now } : {}),
+          ...(isStaff
+            ? {
+                approvedById: user.id,
+                approvedAt: now,
+                publishedAt: now,
+                expiresAt: listingExpiresAt(now),
+              }
+            : {}),
         },
       });
 
@@ -186,6 +194,7 @@ export class VehiclesService {
             status: true,
             views: true,
             favorites: true,
+            expiresAt: true,
             createdBy: { select: { name: true } },
           },
         },
@@ -217,6 +226,7 @@ export class VehiclesService {
         createdByName: v.listing?.createdBy?.name ?? "—",
         pendingApproval: status === "PENDING",
         createdAt: v.createdAt.toISOString(),
+        expiresAt: v.listing?.expiresAt ? v.listing.expiresAt.toISOString() : null,
       };
     });
   }
@@ -279,6 +289,7 @@ export class VehiclesService {
         approvedById: user.id,
         approvedAt: now,
         publishedAt,
+        expiresAt: listingExpiresAt(now),
         rankingScore,
       },
       select: { status: true },
@@ -541,9 +552,17 @@ export class VehiclesService {
     } as const;
     const next = transitions[action];
 
+    // Ativar/reativar renova a janela de 24h; publishedAt também atualiza para
+    // o feed considerar o anúncio "fresco" de novo.
+    const becomesActive = next.status === "ACTIVE";
+
     const updated = await this.prisma.listing.update({
       where: { id: vehicle.listing.id },
-      data: { status: next.status, soldAt: next.soldAt },
+      data: {
+        status: next.status,
+        soldAt: next.soldAt,
+        ...(becomesActive ? { expiresAt: listingExpiresAt(now), publishedAt: now } : {}),
+      },
       select: { status: true },
     });
 

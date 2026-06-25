@@ -7,6 +7,7 @@ import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerModule } from "nestjs-pino";
 
 import { CorrelationIdMiddleware } from "./common/middleware/correlation-id.middleware";
@@ -33,6 +34,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     VehiclesModule,
     CatalogModule,
     LeadsModule,

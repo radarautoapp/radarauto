@@ -318,3 +318,17 @@
   background: var(--success, #10b981);
   color: #fff;
 }
+
+/* Indicador de expiração da janela de 24h (Meus Veículos) */
+.vcard-expiry {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+}
+.vcard-expiry.soon {
+  color: var(--warning, #f59e0b);
+}

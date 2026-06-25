@@ -9,11 +9,12 @@ import { PrismaModule } from "../../prisma/prisma.module";
 import { StorageModule } from "../storage/storage.module";
 import { VehiclesController } from "./vehicles.controller";
 import { VehiclesService } from "./vehicles.service";
+import { ListingExpiryService } from "./listing-expiry.service";
 
 @Module({
   imports: [PrismaModule, StorageModule],
   controllers: [VehiclesController],
-  providers: [VehiclesService],
+  providers: [VehiclesService, ListingExpiryService],
   exports: [VehiclesService],
 })
 export class VehiclesModule {}

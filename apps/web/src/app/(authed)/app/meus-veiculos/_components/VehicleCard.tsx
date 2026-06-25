@@ -13,6 +13,7 @@
 import {
   Car,
   Check,
+  Clock,
   DollarSign,
   Eye,
   MapPin,
@@ -35,6 +36,18 @@ function brl(cents: number): string {
 
 function kmFmt(km: number): string {
   return km.toLocaleString("pt-BR");
+}
+
+/** Tempo restante até a expiração da janela de 24h. */
+function expiryInfo(expiresAt: string | null): { label: string; soon: boolean } | null {
+  if (!expiresAt) return null;
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  if (ms <= 0) return { label: "Expirando…", soon: true };
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const mins = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  const soon = ms < 3 * 60 * 60 * 1000; // < 3h
+  const label = hours >= 1 ? `Expira em ${hours}h` : `Expira em ${mins}min`;
+  return { label, soon };
 }
 
 const STATUS_META: Record<
@@ -107,6 +120,18 @@ export function VehicleCard({
         </div>
 
         <div className="vcard-version">{vehicle.version}</div>
+
+        {isActive &&
+          (() => {
+            const exp = expiryInfo(vehicle.expiresAt);
+            if (!exp) return null;
+            return (
+              <div className={`vcard-expiry${exp.soon ? " soon" : ""}`}>
+                <Clock size={12} />
+                {exp.label}
+              </div>
+            );
+          })()}
 
         <div className="vcard-specs">
           <span>

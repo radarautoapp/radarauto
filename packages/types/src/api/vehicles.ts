@@ -36,6 +36,8 @@ export interface VehicleListItem {
   /** Se o veículo aguarda aprovação do lojista */
   pendingApproval: boolean;
   createdAt: string;
+  /** Quando a janela de 24h do anúncio ativo expira (ISO) — null se não ativo. */
+  expiresAt: string | null;
 }
 
 export interface ListVehiclesResponse {
