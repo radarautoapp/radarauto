@@ -10,7 +10,7 @@
  */
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { LogOut } from "lucide-react";
@@ -36,7 +36,10 @@ export default function AuthedLayout({
   const clearSession = useAuthStore((s) => s.clearSession);
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [editId, setEditId] = useState<string | null>(null);
+  useEffect(() => {
+    setEditId(new URLSearchParams(window.location.search).get("id"));
+  }, [pathname]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [store, setStore] = useState<{ name: string; logoUrl: string | null } | null>(null);
@@ -117,7 +120,7 @@ export default function AuthedLayout({
     }
   };
 
-  const pageMeta = inferPageMeta(pathname, navItems, searchParams.get("id"));
+  const pageMeta = inferPageMeta(pathname, navItems, editId);
 
   return (
     <>

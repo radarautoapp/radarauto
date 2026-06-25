@@ -12,6 +12,8 @@
  */
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { Check, Copy, CreditCard, Crown, Lock, QrCode, Sparkles, Tag, X } from "lucide-react";
 import { useEffect, useState } from "react";
 

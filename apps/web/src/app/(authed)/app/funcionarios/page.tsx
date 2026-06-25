@@ -6,6 +6,8 @@
  */
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { AlertCircle, Mail, UserPlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

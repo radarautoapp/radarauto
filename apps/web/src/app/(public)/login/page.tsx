@@ -10,8 +10,8 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { BrandLogo, Button, FormField, Input, PasswordInput } from "@radar/ui";
 
@@ -21,9 +21,11 @@ import { authApi } from "@/lib/auth-api";
 import { useAuthStore } from "@/stores/auth.store";
 
 export default function LoginPage(): JSX.Element {
-  const searchParams = useSearchParams();
-  const expiredNotice =
-    searchParams.get("expired") === "1" ? "Sessão expirada. Faça login de novo." : null;
+  const [expired, setExpired] = useState(false);
+  useEffect(() => {
+    setExpired(new URLSearchParams(window.location.search).get("expired") === "1");
+  }, []);
+  const expiredNotice = expired ? "Sessão expirada. Faça login de novo." : null;
 
   const router = useRouter();
   const setSession = useAuthStore((s) => s.setSession);
