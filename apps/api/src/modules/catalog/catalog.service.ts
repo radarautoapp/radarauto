@@ -36,7 +36,7 @@ const MAX_PAGE_SIZE = 60;
 const OPPORTUNITY_DIFF = -20;
 /** Strip de oportunidades no topo: 15%+ abaixo. */
 const OPP_STRIP_DIFF = -15;
-const OPP_STRIP_LIMIT = 8;
+const OPP_STRIP_LIMIT = 15;
 /** Quantos cards o plano free vê nítidos no catálogo. */
 const FREE_CATALOG_LIMIT = 3;
 /** Fotos visíveis no plano free (galeria limitada). */
