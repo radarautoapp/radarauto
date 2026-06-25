@@ -11,6 +11,7 @@ import type { ComponentType, CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 
 import { ApiClientError } from "@/lib/api";
+import { toFriendlyError } from "@/lib/error-messages";
 
 const IS_DEV = process.env.NODE_ENV !== "production";
 
