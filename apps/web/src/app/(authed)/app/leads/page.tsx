@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 import {
   ChevronDown,
   Clock,
+  Crown,
   Eye,
   Flame,
   Heart,
@@ -20,11 +21,13 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import type { LeadItem, LeadsResponse, LeadVehicleGroup } from "@radar/types";
-import { Avatar, EmptyState, Skeleton, WhatsAppIcon } from "@radar/ui";
+import { Avatar, Button, EmptyState, Skeleton, WhatsAppIcon } from "@radar/ui";
 
+import { ApiClientError } from "@/lib/api";
 import { toFriendlyError } from "@/lib/error-messages";
 import { leadsApi } from "@/lib/leads-api";
 
@@ -176,15 +179,22 @@ function VehicleAccordion({
 export default function LeadsPage(): JSX.Element {
   const [data, setData] = useState<LeadsResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [premiumLocked, setPremiumLocked] = useState(false);
 
   const load = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
+    setPremiumLocked(false);
     try {
       setData(await leadsApi.list());
     } catch (err) {
-      setError(toFriendlyError(err));
+      if (err instanceof ApiClientError && err.code === "PREMIUM_REQUIRED") {
+        setPremiumLocked(true);
+      } else {
+        setError(toFriendlyError(err));
+      }
     } finally {
       setLoading(false);
     }
@@ -237,6 +247,22 @@ export default function LeadsPage(): JSX.Element {
           <Skeleton height="88px" />
           <Skeleton height="88px" />
           <Skeleton height="88px" />
+        </div>
+      )}
+
+      {!loading && premiumLocked && (
+        <div className="leads-upsell">
+          <div className="leads-upsell-icon">
+            <Crown size={30} />
+          </div>
+          <h2 className="leads-upsell-title">O Engine de Leads é Premium</h2>
+          <p className="leads-upsell-text">
+            Descubra quem se interessou pelos seus veículos, qualificado em Quente, Morno e Frio por
+            comportamento — e fale direto com cada interessado pelo WhatsApp.
+          </p>
+          <Button variant="primary" onClick={() => router.push("/app/planos")}>
+            Conhecer o Premium
+          </Button>
         </div>
       )}
 

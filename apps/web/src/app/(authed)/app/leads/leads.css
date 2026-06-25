@@ -403,3 +403,73 @@
     margin-left: 55px;
   }
 }
+
+/* Upsell premium (lojista free na tela de Leads) */
+.leads-upsell {
+  max-width: 460px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 40px 28px;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--r-lg, 20px);
+}
+.leads-upsell-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary, #2563eb), #3b82f6);
+  box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.55);
+}
+.leads-upsell-title {
+  font-family: var(--display, "Sora");
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text, #0f172a);
+  margin: 0 0 10px;
+}
+.leads-upsell-text {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--muted, #64748b);
+  margin: 0 0 24px;
+}
+
+/* Upsell premium (lojista free na tela de Leads) */
+.leads-upsell {
+  max-width: 460px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 40px 28px;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--r-lg, 20px);
+}
+.leads-upsell-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary, #2563eb), #3b82f6);
+  box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.55);
+}
+.leads-upsell-title {
+  font-family: var(--display, "Sora");
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text, #0f172a);
+  margin: 0 0 10px;
+}
+.leads-upsell-text {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--muted, #64748b);
+  margin: 0 0 24px;
+}

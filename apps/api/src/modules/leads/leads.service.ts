@@ -121,6 +121,19 @@ export class LeadsService {
       });
     }
 
+    // Engine de Leads é exclusivo do plano Premium. O acesso vale para toda a
+    // loja: olhamos o plano do lojista dono (funcionário herda o da loja).
+    const owner = await this.prisma.user.findFirst({
+      where: { storeId: user.storeId, role: "lojista", deletedAt: null },
+      select: { plan: true },
+    });
+    if (owner?.plan !== "premium") {
+      throw new ForbiddenException({
+        code: "PREMIUM_REQUIRED",
+        message: "O Engine de Leads é um recurso Premium.",
+      });
+    }
+
     const vehicles = await this.prisma.vehicle.findMany({
       where: { storeId: user.storeId, deletedAt: null },
       select: {
