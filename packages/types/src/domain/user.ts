@@ -23,6 +23,7 @@ export interface User {
   plan: Plan;
   subscriptionStatus: SubscriptionStatus | null;
   subscriptionCycle: SubscriptionCycle | null;
+  subscriptionExpiresAt: string | null;
   storeId: string | null;
   createdAt: string;
   updatedAt: string;

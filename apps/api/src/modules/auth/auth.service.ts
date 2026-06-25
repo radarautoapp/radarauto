@@ -12,6 +12,8 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Plan, User, UserRole } from "@prisma/client";
+
+import { newUserSubscription } from "../../common/promo";
 import * as argon2 from "argon2";
 
 import { CnpjService } from "../cnpj/cnpj.service";
@@ -75,7 +77,7 @@ export class AuthService {
         phone: this.normalizePhone(dto.phone),
         cpf,
         role: UserRole.revendedor,
-        plan: Plan.free,
+        ...newUserSubscription(),
       },
     });
 
@@ -144,7 +146,7 @@ export class AuthService {
           phone: normalizedPhone,
           cpf,
           role: UserRole.lojista,
-          plan: Plan.free,
+          ...newUserSubscription(),
           storeId: store.id,
         },
       });

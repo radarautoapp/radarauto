@@ -9,14 +9,17 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
+import { PrismaModule } from "../../prisma/prisma.module";
 import { CnpjModule } from "../cnpj/cnpj.module";
 import { VerificationModule } from "../verification/verification.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { SubscriptionExpiryService } from "./subscription-expiry.service";
 import { JwtStrategy } from "./jwt.strategy";
 
 @Module({
   imports: [
+    PrismaModule,
     PassportModule,
     CnpjModule,
     VerificationModule,
@@ -32,7 +35,7 @@ import { JwtStrategy } from "./jwt.strategy";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, SubscriptionExpiryService],
   exports: [AuthService],
 })
 export class AuthModule {}
