@@ -30,7 +30,7 @@ export const NAV_ITEMS: Record<string, NavConfigItem> = {
 
 export const NAV_BY_ROLE: Record<UserRole, string[]> = {
   lojista: ["vehicles", "mine", "leads", "team", "plans", "settings"],
-  funcionario: ["vehicles", "mine", "leads"],
+  funcionario: ["mine", "leads"],
   revendedor: ["vehicles", "plans"],
   admin: ["vehicles", "mine", "leads", "team", "plans", "settings"],
 };

@@ -22,7 +22,12 @@ export default function AppRedirectPage(): JSX.Element {
 
   useEffect(() => {
     if (!user) return;
-    const target = user.role === "revendedor" ? "/app/catalogo" : "/app/meus-veiculos";
+    // Lojista e revendedor entram pelo Catálogo (vitrine do mercado);
+    // funcionário e admin vão para Meus Veículos (gestão da loja).
+    const target =
+      user.role === "lojista" || user.role === "revendedor"
+        ? "/app/catalogo"
+        : "/app/meus-veiculos";
     router.replace(target);
   }, [user, router]);
 
