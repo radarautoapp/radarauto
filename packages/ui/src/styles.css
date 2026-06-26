@@ -1196,3 +1196,31 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
   justify-content: center;
   margin-bottom: 28px;
 }
+
+@media (max-width: 640px) {
+  .inp,
+  .dd-btn,
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .inp,
+  .dd-btn,
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
