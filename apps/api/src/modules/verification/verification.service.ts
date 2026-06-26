@@ -20,6 +20,7 @@
  *   - Claims: { purpose: "email_verification" | "phone_verification", target, jti }
  */
 import {
+  Inject,
   BadRequestException,
   ConflictException,
   HttpException,
@@ -33,7 +34,7 @@ import * as argon2 from "argon2";
 import { randomInt, randomUUID } from "crypto";
 
 import { PrismaService } from "../../prisma/prisma.service";
-import { MockEmailProvider } from "./providers/mock-email.provider";
+import { EMAIL_VERIFICATION_SENDER } from "./providers/email-verification.token";
 import { MockSmsProvider } from "./providers/mock-sms.provider";
 import { VerificationProvider } from "./providers/verification-provider.interface";
 
@@ -71,7 +72,7 @@ export class VerificationService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     smsProvider: MockSmsProvider,
-    emailProvider: MockEmailProvider,
+    @Inject(EMAIL_VERIFICATION_SENDER) emailProvider: VerificationProvider,
   ) {
     this.providers = {
       phone: smsProvider,
