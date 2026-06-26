@@ -8,7 +8,7 @@
  */
 
 /** URL pública da logo (servida pelo front em produção). */
-const LOGO_URL = "https://radarauto.app/logo-email.png";
+const LOGO_URL = "https://www.radarauto.app/logo-email.png";
 
 export interface OtpEmail {
   subject: string;
