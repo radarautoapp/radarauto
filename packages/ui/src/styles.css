@@ -1189,3 +1189,10 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
 }
 
 .sb-logo-img{height:34px;width:auto;display:block;}
+
+/* Centraliza a logo na tela de login (sem titulo/subtitulo) */
+.auth-logo-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}

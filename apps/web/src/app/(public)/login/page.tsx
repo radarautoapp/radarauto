@@ -53,10 +53,9 @@ export default function LoginPage(): JSX.Element {
   return (
     <main className="auth-shell">
       <div className="auth-card">
-        <BrandLogo />
-
-        <h1 className="auth-title">Entrar</h1>
-        <p className="auth-sub">Acesse sua conta para continuar.</p>
+        <div className="auth-logo-center">
+          <BrandLogo />
+        </div>
 
         <form className="auth-form" onSubmit={onSubmit} noValidate>
           <FormField label="Email" htmlFor="email">
