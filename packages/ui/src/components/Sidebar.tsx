@@ -15,7 +15,6 @@ import { ChevronRight, LogOut } from "lucide-react";
 import type { ComponentType } from "react";
 
 import { Avatar } from "./Avatar";
-import { BrandMark } from "./Brand";
 
 export interface SidebarItem {
   id: string;
@@ -60,10 +59,7 @@ export function Sidebar({
         role={onLogoClick ? "button" : undefined}
         tabIndex={onLogoClick ? 0 : undefined}
       >
-        <BrandMark size={40} />
-        <div className="sb-name">
-          Radar<b>Auto</b>
-        </div>
+        <img src="/logo-white.svg" alt="RadarAuto" className="sb-logo-img" />
       </div>
 
       <div className="sb-body">

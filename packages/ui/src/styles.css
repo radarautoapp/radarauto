@@ -1187,3 +1187,5 @@ select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+x
 .confirm-actions > * {
   flex: 1;
 }
+
+.sb-logo-img{height:34px;width:auto;display:block;}
