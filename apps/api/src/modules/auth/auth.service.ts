@@ -60,7 +60,9 @@ export class AuthService {
 
   async registerRevendedor(dto: RegisterRevendedorDto, ctx: AuthContext): Promise<AuthResult> {
     await this.verificationService.consumeToken(dto.emailVerificationToken, "email", dto.email);
-    await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+    if (dto.phoneVerificationToken) {
+      await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+    }
     await this.ensureEmailAvailable(dto.email);
 
     const cpf = this.normalizeCpf(dto.cpf);
@@ -86,7 +88,9 @@ export class AuthService {
 
   async registerLojista(dto: RegisterLojistaDto, ctx: AuthContext): Promise<AuthResult> {
     await this.verificationService.consumeToken(dto.emailVerificationToken, "email", dto.email);
-    await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+    if (dto.phoneVerificationToken) {
+      await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+    }
     await this.ensureEmailAvailable(dto.email);
 
     const cpf = this.normalizeCpf(dto.cpf);

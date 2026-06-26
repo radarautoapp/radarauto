@@ -37,17 +37,6 @@ export const EMPTY_USER: UserForm = {
 };
 
 export const STEPS_BY_TYPE: Record<AccountType, StepKey[]> = {
-  revendedor: ["type", "name", "cpf", "email", "verify-email", "phone", "verify-phone", "password"],
-  lojista: [
-    "type",
-    "cnpj",
-    "review",
-    "name",
-    "cpf",
-    "email",
-    "verify-email",
-    "phone",
-    "verify-phone",
-    "password",
-  ],
+  revendedor: ["type", "name", "cpf", "email", "verify-email", "phone", "password"],
+  lojista: ["type", "cnpj", "review", "name", "cpf", "email", "verify-email", "phone", "password"],
 };

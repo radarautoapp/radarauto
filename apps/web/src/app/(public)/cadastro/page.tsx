@@ -139,7 +139,7 @@ export default function CadastroPage(): JSX.Element {
   };
 
   const submit = async (): Promise<void> => {
-    if (!accountType || !emailVerifToken || !phoneVerifToken) return;
+    if (!accountType || !emailVerifToken) return;
     setSubmitting(true);
     try {
       const res =
@@ -151,7 +151,6 @@ export default function CadastroPage(): JSX.Element {
               cpf: normalizeCpf(userForm.cpf),
               password: userForm.password,
               emailVerificationToken: emailVerifToken,
-              phoneVerificationToken: phoneVerifToken,
             })
           : await authApi.registerLojista({
               name: userForm.name,
@@ -161,7 +160,6 @@ export default function CadastroPage(): JSX.Element {
               password: userForm.password,
               cnpj: cnpjData?.cnpj ?? cnpjInput.replace(/\D/g, ""),
               emailVerificationToken: emailVerifToken,
-              phoneVerificationToken: phoneVerifToken,
             });
       setSession(res.user, res.sessionId);
       setSuccess(true);

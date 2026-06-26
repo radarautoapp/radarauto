@@ -3,7 +3,15 @@
  *
  * Exige verificação dupla (email + phone) + CPF + CNPJ válidos.
  */
-import { IsEmail, IsString, Length, Matches, MaxLength, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 export class RegisterLojistaDto {
   @IsString()
@@ -39,7 +47,8 @@ export class RegisterLojistaDto {
   @MinLength(20, { message: "Token de verificação de email inválido" })
   emailVerificationToken!: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(20, { message: "Token de verificação de telefone inválido" })
-  phoneVerificationToken!: string;
+  phoneVerificationToken?: string;
 }
