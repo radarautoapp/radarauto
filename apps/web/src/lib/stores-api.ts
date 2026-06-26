@@ -11,7 +11,7 @@ import type {
 
 import { apiFetch, tokenStorage } from "./api";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export const storesApi = {
   async getMine(): Promise<GetMyStoreResponse> {
@@ -34,7 +34,7 @@ export const storesApi = {
     form.append("file", file, filename);
 
     const token = tokenStorage.get();
-    const res = await fetch(`${API_BASE}/stores/me/logo`, {
+    const res = await fetch(`${API_URL}/api/v1/stores/me/logo`, {
       method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: form,
