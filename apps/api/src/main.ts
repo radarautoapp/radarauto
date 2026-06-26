@@ -52,11 +52,11 @@ async function bootstrap(): Promise<void> {
   // API prefix
   app.setGlobalPrefix("api/v1");
 
-  const port = config.get<number>("API_PORT", 3001);
-  await app.listen(port);
+  const port = Number(process.env.PORT) || config.get<number>("API_PORT", 3001);
+  await app.listen(port, "0.0.0.0");
 
   const logger = app.get(Logger);
-  logger.log(`🚀 RadarAuto API rodando em http://localhost:${port}/api/v1`);
+  logger.log(`🚀 RadarAuto API rodando na porta ${port} (/api/v1)`);
 }
 
 bootstrap().catch((err) => {
