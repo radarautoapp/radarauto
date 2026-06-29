@@ -1,4 +1,4 @@
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -10,11 +10,10 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
 
   typedRoutes: true,
-  outputFileTracingRoot: __dirname,
+  outputFileTracingRoot: join(__dirname, "../../"),
   outputFileTracingIncludes: {
     "/**": [
-      "./node_modules/source-map/**",
-      "../../node_modules/.pnpm/next@*/node_modules/next/dist/compiled/source-map/**",
+      "node_modules/.pnpm/next@*/node_modules/next/dist/**",
     ],
   },
   transpilePackages: ["@radar/ui", "@radar/types"],
