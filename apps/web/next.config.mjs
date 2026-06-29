@@ -12,7 +12,10 @@ const nextConfig = {
   typedRoutes: true,
   outputFileTracingRoot: __dirname,
   outputFileTracingIncludes: {
-    "/**": ["./node_modules/next/dist/compiled/source-map/**"],
+    "/**": [
+      "./node_modules/source-map/**",
+      "../../node_modules/.pnpm/next@*/node_modules/next/dist/compiled/source-map/**",
+    ],
   },
   transpilePackages: ["@radar/ui", "@radar/types"],
   images: {
