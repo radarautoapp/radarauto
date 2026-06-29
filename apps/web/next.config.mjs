@@ -11,6 +11,9 @@ const nextConfig = {
 
   typedRoutes: true,
   outputFileTracingRoot: __dirname,
+  outputFileTracingIncludes: {
+    "/**": ["./node_modules/next/dist/compiled/source-map/**"],
+  },
   transpilePackages: ["@radar/ui", "@radar/types"],
   images: {
     remotePatterns: [],
