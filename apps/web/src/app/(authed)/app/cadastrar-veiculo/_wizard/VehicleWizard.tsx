@@ -961,6 +961,30 @@ export function VehicleWizard({
                 ))}
               </div>
             </div>
+
+            <div className="card card-p" style={{ marginTop: 16 }}>
+              <span className="micro">Observações (opcional)</span>
+              <div className="muted" style={{ fontSize: 12.5, margin: "4px 0 12px" }}>
+                Conte os diferenciais do veículo. Aparece na página do anúncio.
+              </div>
+              <textarea
+                className="inp"
+                value={form.obs}
+                onChange={(e) => set("obs", e.target.value)}
+                maxLength={1000}
+                rows={5}
+                placeholder="Ex: Único dono, todas as revisões na concessionária, IPVA 2025 pago, pneus novos, aceito troca..."
+                style={{
+                  resize: "vertical",
+                  minHeight: 110,
+                  fontFamily: "inherit",
+                  lineHeight: 1.5,
+                }}
+              />
+              <div className="muted" style={{ fontSize: 12, textAlign: "right", marginTop: 6 }}>
+                {form.obs.length}/1000
+              </div>
+            </div>
           </>
         )}
 
