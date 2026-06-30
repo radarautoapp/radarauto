@@ -6,7 +6,16 @@
  *
  * Mantém Single source of truth (Regra 13).
  */
-import { Car, Crown, LayoutDashboard, Settings, User as UserIcon, Users } from "lucide-react";
+import {
+  Car,
+  Crown,
+  Eye,
+  LayoutDashboard,
+  Settings,
+  Tag,
+  User as UserIcon,
+  Users,
+} from "lucide-react";
 import type { ComponentType } from "react";
 
 import type { UserRole } from "@radar/types";
@@ -21,8 +30,8 @@ export interface NavConfigItem {
 export const NAV_ITEMS: Record<string, NavConfigItem> = {
   dashboard: { id: "dashboard", label: "Início", icon: LayoutDashboard, href: "/app" },
   vehicles: { id: "vehicles", label: "Catálogo", icon: Car, href: "/app/catalogo" },
-  mine: { id: "mine", label: "Meus veículos", icon: Car, href: "/app/meus-veiculos" },
-  leads: { id: "leads", label: "Visualizações", icon: Users, href: "/app/leads" },
+  mine: { id: "mine", label: "Meus veículos", icon: Tag, href: "/app/meus-veiculos" },
+  leads: { id: "leads", label: "Visualizações", icon: Eye, href: "/app/leads" },
   team: { id: "team", label: "Funcionários", icon: Users, href: "/app/funcionarios" },
   plans: { id: "plans", label: "Planos", icon: Crown, href: "/app/planos" },
   settings: { id: "settings", label: "Configuração", icon: Settings, href: "/app/configuracao" },
