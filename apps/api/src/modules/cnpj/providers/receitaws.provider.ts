@@ -40,6 +40,7 @@ interface ReceitaWsPayload {
   numero: string;
   bairro: string;
   atividade_principal: Array<{ code: string; text: string }>;
+  atividades_secundarias?: Array<{ code: string; text: string }>;
   qsa: ReceitaWsQsaItem[];
 }
 
@@ -119,7 +120,10 @@ export class ReceitaWsProvider implements CnpjProvider {
       street: p.logradouro || null,
       number: p.numero || null,
       neighborhood: p.bairro || null,
-      mainActivityCode: activity?.code ?? null,
+      mainActivityCode: activity?.code ? activity.code.replace(/\D/g, "") : null,
+      secondaryActivityCodes: (p.atividades_secundarias ?? [])
+        .map((a) => (a.code ? a.code.replace(/\D/g, "") : null))
+        .filter((c): c is string => !!c),
       mainActivityName: activity?.text ?? null,
       partners,
       source: "receitaws",

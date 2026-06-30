@@ -40,6 +40,7 @@ interface BrasilApiPayload {
   bairro: string | null;
   cnae_fiscal: number | null;
   cnae_fiscal_descricao: string | null;
+  cnaes_secundarios: Array<{ codigo: number; descricao: string }> | null;
   qsa: BrasilApiQsaItem[] | null;
 }
 
@@ -115,6 +116,9 @@ export class BrasilApiProvider implements CnpjProvider {
       neighborhood: p.bairro,
       mainActivityCode: p.cnae_fiscal ? String(p.cnae_fiscal) : null,
       mainActivityName: p.cnae_fiscal_descricao,
+      secondaryActivityCodes: (p.cnaes_secundarios ?? [])
+        .map((c) => (c.codigo ? String(c.codigo) : null))
+        .filter((c): c is string => !!c),
       partners,
       source: "brasilapi",
       fetchedAt: new Date().toISOString(),

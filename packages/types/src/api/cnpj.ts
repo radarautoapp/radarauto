@@ -30,6 +30,7 @@ export interface CnpjLookupResponse {
   neighborhood: string | null;
   mainActivityCode: string | null;
   mainActivityName: string | null;
+  secondaryActivityCodes: string[];
   partners: CnpjPartner[];
   source: "brasilapi" | "receitaws" | "cache";
   fetchedAt: string;

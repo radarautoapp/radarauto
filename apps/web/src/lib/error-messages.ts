@@ -34,6 +34,8 @@ export const MESSAGES: Record<string, string> = {
   CNPJ_LOOKUP_FAILED: "Não conseguimos consultar este CNPJ agora. Tente novamente em instantes.",
   CNPJ_NOT_FOUND: "CNPJ não encontrado na Receita Federal.",
   CNPJ_INACTIVE: "Este CNPJ está com situação cadastral irregular.",
+  CNPJ_NOT_AUTOMOTIVE:
+    "Este CNPJ não pertence ao ramo automotivo. O RadarAuto é exclusivo para lojas e revendas de veículos.",
   WEAK_PASSWORD: "A senha precisa ter no mínimo 8 caracteres.",
 
   // ===== Verificação OTP =====

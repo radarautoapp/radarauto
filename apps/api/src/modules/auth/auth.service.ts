@@ -17,6 +17,7 @@ import { newUserSubscription } from "../../common/promo";
 import * as argon2 from "argon2";
 
 import { CnpjService } from "../cnpj/cnpj.service";
+import { isAutomotiveCnae } from "../cnpj/automotive-cnae";
 import { CnpjValidator } from "../cnpj/cnpj.validator";
 import { CpfValidator } from "../cpf/cpf.validator";
 import { VerificationService } from "../verification/verification.service";
@@ -119,6 +120,14 @@ export class AuthService {
       throw new ConflictException({
         code: "CNPJ_INACTIVE",
         message: `Este CNPJ não está ativo na Receita Federal (situação: ${lookup.status}).`,
+      });
+    }
+
+    if (!isAutomotiveCnae(lookup.mainActivityCode, lookup.secondaryActivityCodes)) {
+      throw new ConflictException({
+        code: "CNPJ_NOT_AUTOMOTIVE",
+        message:
+          "Este CNPJ não pertence ao ramo automotivo. O RadarAuto é exclusivo para lojas e revendas de veículos.",
       });
     }
 
