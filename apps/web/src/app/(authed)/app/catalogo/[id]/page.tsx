@@ -508,7 +508,7 @@ function ContactBlock({
           <div className="dt-contact-actions">
             <div className="dt-phone">
               <Phone size={16} />
-              {maskPhone(v.seller.phone)}
+              {maskPhone(v.seller.whatsapp ?? v.seller.phone)}
             </div>
             {v.seller.whatsapp && (
               <a
