@@ -22,7 +22,7 @@ export const NAV_ITEMS: Record<string, NavConfigItem> = {
   dashboard: { id: "dashboard", label: "Início", icon: LayoutDashboard, href: "/app" },
   vehicles: { id: "vehicles", label: "Catálogo", icon: Car, href: "/app/catalogo" },
   mine: { id: "mine", label: "Meus veículos", icon: Car, href: "/app/meus-veiculos" },
-  leads: { id: "leads", label: "Leads", icon: Users, href: "/app/leads" },
+  leads: { id: "leads", label: "Visualizações", icon: Users, href: "/app/leads" },
   team: { id: "team", label: "Funcionários", icon: Users, href: "/app/funcionarios" },
   plans: { id: "plans", label: "Planos", icon: Crown, href: "/app/planos" },
   settings: { id: "settings", label: "Configuração", icon: Settings, href: "/app/configuracao" },

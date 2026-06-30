@@ -207,3 +207,23 @@
 .vwz-ref-apply:hover {
   filter: brightness(1.05);
 }
+
+
+/* Switch "li os termos" no step final do cadastro */
+.vwz-terms {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+}
+.vwz-terms-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text, #0b1220);
+  line-height: 1.4;
+}

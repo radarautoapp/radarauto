@@ -147,6 +147,7 @@ export function VehicleWizard({
   }, [form, mode]);
 
   // ---- Dados externos ----
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [brandsLoading, setBrandsLoading] = useState(true);
   const [brandSearch, setBrandSearch] = useState("");
@@ -1047,6 +1048,43 @@ export function VehicleWizard({
               onChange={onPhotoPicked}
               style={{ display: "none" }}
             />
+
+            <label className="vwz-terms">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={termsAccepted}
+                onClick={() => setTermsAccepted((v) => !v)}
+                className={`toggle${termsAccepted ? " on" : ""}`}
+                style={{
+                  width: 46,
+                  height: 27,
+                  borderRadius: 999,
+                  border: "none",
+                  cursor: "pointer",
+                  background: termsAccepted ? "var(--success)" : "#cbd5e1",
+                  position: "relative",
+                  flexShrink: 0,
+                  transition: "background .2s",
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 3,
+                    left: termsAccepted ? 22 : 3,
+                    width: 21,
+                    height: 21,
+                    borderRadius: "50%",
+                    background: "#fff",
+                    transition: "left .2s",
+                  }}
+                />
+              </button>
+              <span className="vwz-terms-text">
+                Li e aceito os termos de uso e a pol\u00EDtica de privacidade.
+              </span>
+            </label>
           </div>
         )}
       </div>
@@ -1065,7 +1103,7 @@ export function VehicleWizard({
             variant="primary"
             iconRight={isLast ? Check : ChevronRight}
             onClick={() => void wizard.goNext()}
-            disabled={!wizard.canAdvance || wizard.busy}
+            disabled={!wizard.canAdvance || wizard.busy || (isLast && !termsAccepted)}
             loading={wizard.busy}
           >
             {isLast ? "Cadastrar veículo" : "Continuar"}
