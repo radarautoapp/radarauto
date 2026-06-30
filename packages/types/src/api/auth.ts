@@ -34,6 +34,7 @@ export interface LoginRequest {
 
 export interface AuthResponse {
   token: string;
+  refreshToken: string;
   expiresAt: string;
   user: User;
   sessionId: string;

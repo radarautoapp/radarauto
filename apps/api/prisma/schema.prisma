@@ -108,6 +108,9 @@ model Session {
   lastSeenAt   DateTime @default(now())
   expiresAt    DateTime
 
+  refreshTokenHash String?
+  refreshExpiresAt DateTime?
+
   createdAt    DateTime @default(now())
   revokedAt    DateTime?
 

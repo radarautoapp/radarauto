@@ -36,7 +36,7 @@ export const authApi = {
       body: input,
       skipAuth: true,
     });
-    tokenStorage.set(data.token);
+    tokenStorage.setSession(data.token, data.refreshToken, data.sessionId);
     return data;
   },
 
@@ -46,7 +46,7 @@ export const authApi = {
       body: input,
       skipAuth: true,
     });
-    tokenStorage.set(data.token);
+    tokenStorage.setSession(data.token, data.refreshToken, data.sessionId);
     return data;
   },
 
@@ -56,7 +56,7 @@ export const authApi = {
       body: input,
       skipAuth: true,
     });
-    tokenStorage.set(data.token);
+    tokenStorage.setSession(data.token, data.refreshToken, data.sessionId);
     return data;
   },
 

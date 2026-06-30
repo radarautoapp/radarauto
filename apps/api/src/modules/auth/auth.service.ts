@@ -15,6 +15,7 @@ import { Plan, User, UserRole } from "@prisma/client";
 
 import { newUserSubscription } from "../../common/promo";
 import * as argon2 from "argon2";
+import * as crypto from "crypto";
 
 import { CnpjService } from "../cnpj/cnpj.service";
 import { isAutomotiveCnae } from "../cnpj/automotive-cnae";
@@ -41,6 +42,7 @@ export interface AuthContext {
 
 export interface AuthResult {
   token: string;
+  refreshToken: string;
   expiresAt: Date;
   sessionId: string;
   user: SafeUser;
@@ -51,6 +53,7 @@ export type SafeUser = Omit<User, "passwordHash">;
 @Injectable()
 export class AuthService {
   private readonly sessionTtlDays = 7;
+  private readonly refreshTtlDays = 90;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -341,6 +344,13 @@ export class AuthService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + this.sessionTtlDays);
 
+    const refreshExpiresAt = new Date();
+    refreshExpiresAt.setDate(refreshExpiresAt.getDate() + this.refreshTtlDays);
+
+    // Refresh token: random forte. No banco fica apenas o hash (nunca o valor cru).
+    const refreshToken = crypto.randomBytes(48).toString("base64url");
+    const refreshTokenHash = await argon2.hash(refreshToken, { type: argon2.argon2id });
+
     const session = await this.prisma.session.create({
       data: {
         userId: user.id,
@@ -348,6 +358,8 @@ export class AuthService {
         userAgent: ctx.userAgent ?? null,
         deviceLabel: ctx.deviceLabel ?? null,
         expiresAt,
+        refreshTokenHash,
+        refreshExpiresAt,
       },
     });
 
@@ -356,10 +368,64 @@ export class AuthService {
 
     return {
       token,
+      refreshToken,
       expiresAt,
       sessionId: session.id,
       user: this.stripPassword(user),
     };
+  }
+
+  /**
+   * Renova o access token a partir de um refresh token valido.
+   * Valida: sessao existe, nao revogada, refresh nao expirado e hash confere.
+   * Emite um novo access token (mesmo sid). Nao rotaciona o refresh nesta versao.
+   */
+  async refreshAccessToken(
+    sessionId: string,
+    refreshToken: string,
+  ): Promise<{ token: string; expiresAt: Date; sessionId: string }> {
+    const invalid = new UnauthorizedException({
+      code: "REFRESH_INVALID",
+      message: "Sessão expirada. Faça login novamente.",
+    });
+
+    if (!sessionId || !refreshToken) throw invalid;
+
+    const session = await this.prisma.session.findUnique({
+      where: { id: sessionId },
+      include: { user: true },
+    });
+
+    if (!session) throw invalid;
+    if (session.revokedAt) throw invalid;
+    if (!session.refreshTokenHash || !session.refreshExpiresAt) throw invalid;
+    if (session.refreshExpiresAt < new Date()) throw invalid;
+    if (!session.user || session.user.deletedAt || !session.user.active) throw invalid;
+
+    const ok = await argon2.verify(session.refreshTokenHash, refreshToken).catch(() => false);
+    if (!ok) throw invalid;
+
+    // novo access token; estende a validade da sessao (sliding) ate o limite do refresh
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + this.sessionTtlDays);
+    const cappedExpiresAt =
+      expiresAt > session.refreshExpiresAt ? session.refreshExpiresAt : expiresAt;
+
+    await this.prisma.session
+      .update({
+        where: { id: session.id },
+        data: { expiresAt: cappedExpiresAt, lastSeenAt: new Date() },
+      })
+      .catch(() => undefined);
+
+    const payload: AuthTokenPayload = {
+      sub: session.userId,
+      sid: session.id,
+      role: session.user.role,
+    };
+    const token = await this.jwt.signAsync(payload);
+
+    return { token, expiresAt: cappedExpiresAt, sessionId: session.id };
   }
 
   private stripPassword(user: User): SafeUser {

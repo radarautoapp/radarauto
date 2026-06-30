@@ -29,6 +29,7 @@ import { LoginDto } from "./dto/login.dto";
 import { RegisterFuncionarioDto } from "./dto/register-funcionario.dto";
 import { RegisterLojistaDto } from "./dto/register-lojista.dto";
 import { RegisterRevendedorDto } from "./dto/register-revendedor.dto";
+import { RefreshDto } from "./dto/refresh.dto";
 import { AuthenticatedRequestUser } from "./jwt.strategy";
 
 @Controller("auth")
@@ -43,6 +44,13 @@ export class AuthController {
     @Req() req: Request,
   ): Promise<ReturnType<AuthService["registerRevendedor"]>> {
     return this.auth.registerRevendedor(dto, this.buildContext(req, dto.email));
+  }
+
+  @Public()
+  @Post("refresh")
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body() dto: RefreshDto): Promise<ReturnType<AuthService["refreshAccessToken"]>> {
+    return this.auth.refreshAccessToken(dto.sessionId, dto.refreshToken);
   }
 
   @Public()
