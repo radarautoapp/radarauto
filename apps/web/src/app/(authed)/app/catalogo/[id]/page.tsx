@@ -222,7 +222,7 @@ export default function VehicleDetailPage() {
           aria-label="Compartilhar anúncio"
         >
           {copied ? <Check size={16} /> : <Share2 size={16} />}
-          {copied ? "Copiado!" : "Compartilhar"}
+          <span className="dt-share-label">{copied ? "Copiado!" : "Compartilhar"}</span>
         </button>
       </div>
 

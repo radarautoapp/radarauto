@@ -920,3 +920,14 @@
 .dt-share:active {
   transform: translateY(1px);
 }
+
+
+/* Botao compartilhar: so icone no mobile */
+@media (max-width: 640px) {
+  .dt-share {
+    padding: 9px;
+  }
+  .dt-share-label {
+    display: none;
+  }
+}
