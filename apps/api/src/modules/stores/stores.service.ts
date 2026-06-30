@@ -77,17 +77,23 @@ export class StoresService {
       }
     }
 
-    if (dto.phone !== undefined && dto.phoneVerificationToken) {
-      await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+    // SMS desabilitado: aceita novo telefone sem verificacao. TODO: reativar.
+    if (dto.phone !== undefined) {
+      if (dto.phoneVerificationToken) {
+        await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+      }
       data.phone = dto.phone.replace(/\D/g, "");
     }
 
-    if (dto.whatsapp !== undefined && dto.whatsappVerificationToken) {
-      await this.verificationService.consumeToken(
-        dto.whatsappVerificationToken,
-        "phone",
-        dto.whatsapp,
-      );
+    // SMS desabilitado: aceita novo whatsapp sem verificacao. TODO: reativar.
+    if (dto.whatsapp !== undefined) {
+      if (dto.whatsappVerificationToken) {
+        await this.verificationService.consumeToken(
+          dto.whatsappVerificationToken,
+          "phone",
+          dto.whatsapp,
+        );
+      }
       data.whatsapp = dto.whatsapp.replace(/\D/g, "");
     }
 

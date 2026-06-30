@@ -11,7 +11,16 @@
  *
  * Rate limiting agressivo (5-10 req/min por IP) pra prevenir DoS.
  */
-import { Body, Controller, Get, NotFoundException, Param, Post, Req } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Req,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
 import type { Request } from "express";
 import type {
@@ -37,13 +46,15 @@ export class VerificationController {
     @Body() dto: SendPhoneDto,
     @Req() req: Request,
   ): Promise<SendVerificationResponse> {
-    const ip = req.ip ?? req.socket?.remoteAddress ?? undefined;
-    const result = await this.verificationService.send("phone", dto.phone, ip);
-    return {
-      expiresAt: result.expiresAt.toISOString(),
-      cooldownSeconds: result.cooldownSeconds,
-      attemptsRemaining: result.attemptsRemaining,
-    };
+    // SMS desabilitado temporariamente. Nenhum codigo e enviado por telefone.
+    // O telefone continua sendo coletado, mas sem verificacao por SMS.
+    // TODO: restaurar o corpo original quando o provider de SMS estiver pronto.
+    void dto;
+    void req;
+    throw new ServiceUnavailableException({
+      code: "SMS_DISABLED",
+      message: "Verificação por SMS está temporariamente indisponível.",
+    });
   }
 
   @Public()

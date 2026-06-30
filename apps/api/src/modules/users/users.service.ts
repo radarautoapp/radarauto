@@ -37,8 +37,12 @@ export class UsersService {
       if (trimmed.length >= 2) data.name = trimmed;
     }
 
-    if (dto.phone !== undefined && dto.phoneVerificationToken) {
-      await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+    // SMS desabilitado temporariamente: aceita novo telefone sem verificacao.
+    // TODO: reativar verificacao quando o provider de SMS estiver disponivel.
+    if (dto.phone !== undefined) {
+      if (dto.phoneVerificationToken) {
+        await this.verificationService.consumeToken(dto.phoneVerificationToken, "phone", dto.phone);
+      }
       data.phone = dto.phone.replace(/\D/g, "");
     }
 

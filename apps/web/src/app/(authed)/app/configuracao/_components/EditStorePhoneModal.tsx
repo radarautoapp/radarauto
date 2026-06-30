@@ -90,16 +90,26 @@ export function EditStorePhoneModal({
   const changed = newDigits !== originalDigits;
   const isValid = newDigits.length >= 10;
 
+  // SMS desabilitado: salva o numero direto, sem verificacao por codigo.
+  // TODO: reativar o fluxo de OTP (setStep("otp")) quando o SMS estiver pronto.
   const goToOtp = async (): Promise<void> => {
     if (!isValid || !changed || busy) return;
     setError(null);
     setBusy(true);
     try {
-      await verificationApi.sendPhone({ phone: newDigits });
-      setStep("otp");
+      const payload = kind === "phone" ? { phone: newDigits } : { whatsapp: newDigits };
+      await storesApi.updateMine(payload);
+      onUpdated();
+      setSuccess({
+        title: labels.success,
+        description: `Novo número: ${maskPhone(newDigits)}`,
+      });
+      setTimeout(() => {
+        setSuccess(null);
+        onClose();
+      }, 1500);
     } catch (err) {
       setError(toFriendlyError(err));
-    } finally {
       setBusy(false);
     }
   };
