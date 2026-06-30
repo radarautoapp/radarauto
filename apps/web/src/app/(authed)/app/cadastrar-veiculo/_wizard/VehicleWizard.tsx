@@ -1082,7 +1082,7 @@ export function VehicleWizard({
                 />
               </button>
               <span className="vwz-terms-text">
-                Li e aceito os termos de uso e a pol\u00EDtica de privacidade.
+                Li e aceito os termos de uso e a política de privacidade.
               </span>
             </label>
           </div>
