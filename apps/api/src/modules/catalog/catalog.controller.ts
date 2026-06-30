@@ -13,6 +13,7 @@ import type { CatalogResponse, VehicleDetailResponse } from "@radar/types";
 import { SafeUser } from "../auth/auth.service";
 
 import { CurrentUser } from "../../common/decorators/current-user.decorator";
+import { Public } from "../../common/decorators/public.decorator";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
 import { CatalogQueryDto } from "./dto/catalog-query.dto";
 import { CatalogService } from "./catalog.service";
@@ -25,6 +26,12 @@ export class CatalogController {
   @Get()
   list(@CurrentUser() user: SafeUser, @Query() query: CatalogQueryDto): Promise<CatalogResponse> {
     return this.catalog.list(user, query);
+  }
+
+  @Public()
+  @Get(":id/preview")
+  preview(@Param("id") id: string) {
+    return this.catalog.preview(id);
   }
 
   @Get(":id")

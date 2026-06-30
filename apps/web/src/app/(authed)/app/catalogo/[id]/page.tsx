@@ -50,6 +50,41 @@ import { GalleryMain, GalleryThumbs } from "../_components/VehicleGallery";
 const brl = (cents: number) => (cents / 100).toLocaleString("pt-BR", { maximumFractionDigits: 0 });
 const num = (n: number) => n.toLocaleString("pt-BR");
 
+/**
+ * Monta a mensagem pre-definida de contato (WhatsApp), enviada pelo interessado
+ * ao lojista. Inclui os dados principais do veiculo + link do anuncio.
+ */
+function buildContactMessage(v: VehicleDetail): string {
+  const L = "\u2501".repeat(12);
+  const desconto = v.fipe > v.price ? Math.round((1 - v.price / v.fipe) * 100) : 0;
+  const linhas = [
+    "\uD83D\uDE97 *RadarAuto*",
+    L,
+    `*${v.brand} ${v.model} ${v.year}*`,
+    L,
+    `\uD83D\uDCCD ${v.city}/${v.state}`,
+    `\u2699\uFE0F ${v.transm} \u00B7 ${v.fuel}`,
+    `\uD83D\uDEE3\uFE0F ${num(v.km)} km`,
+  ];
+  if (v.fipe > 0) {
+    linhas.push(L, `\uD83D\uDCB0 FIPE: R$ ${brl(v.fipe)}`);
+    linhas.push(
+      desconto > 0
+        ? `\u2705 *Por: R$ ${brl(v.price)}* (-${desconto}%)`
+        : `\u2705 *Por: R$ ${brl(v.price)}*`,
+    );
+  } else {
+    linhas.push(L, `\u2705 *R$ ${brl(v.price)}*`);
+  }
+  linhas.push(
+    L,
+    "Tenho interesse neste ve\u00EDculo! Ainda est\u00E1 dispon\u00EDvel?",
+    "",
+    `\uD83D\uDD17 https://www.radarauto.app/v/${v.id}`,
+  );
+  return linhas.join("\n");
+}
+
 export default function VehicleDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
@@ -443,7 +478,7 @@ function ContactBlock({
             {v.seller.whatsapp && (
               <a
                 className="btn btn-wa dt-btn-block"
-                href={`https://wa.me/${v.seller.whatsapp.replace(/\D/g, "")}`}
+                href={`https://wa.me/${v.seller.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(buildContactMessage(v))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => void leadsApi.contact(v.id, "whatsapp")}
@@ -452,13 +487,6 @@ function ContactBlock({
                 Chamar no WhatsApp
               </a>
             )}
-            <button
-              className="btn btn-tg dt-btn-block"
-              onClick={() => void leadsApi.contact(v.id, "telegram")}
-            >
-              <TelegramIcon size={17} />
-              Chamar no Telegram
-            </button>
           </div>
 
           <div className="dt-store-rep">

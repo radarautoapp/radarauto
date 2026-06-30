@@ -240,6 +240,59 @@ export class CatalogService {
    * FREE recebe galeria limitada e sem vendedor/insights; premium recebe tudo.
    * Incrementa o contador de views (best-effort).
    */
+  /**
+   * Preview publico (sem auth) de um veiculo — dados nao-sensiveis para o card
+   * de compartilhamento (Open Graph no WhatsApp). NAO inclui contato/seller.
+   * Retorna null se o veiculo nao existir ou nao estiver ACTIVE.
+   */
+  async preview(id: string): Promise<{
+    id: string;
+    brand: string;
+    model: string;
+    year: number;
+    km: number;
+    transm: string;
+    fuel: string;
+    price: number;
+    fipe: number;
+    city: string;
+    state: string;
+    coverPhoto: string | null;
+  } | null> {
+    const v = await this.prisma.vehicle.findFirst({
+      where: { id, deletedAt: null, listing: { is: { status: "ACTIVE" } } },
+      select: {
+        id: true,
+        brand: true,
+        model: true,
+        year: true,
+        km: true,
+        transm: true,
+        fuel: true,
+        price: true,
+        fipe: true,
+        city: true,
+        state: true,
+        photos: true,
+      },
+    });
+    if (!v) return null;
+    return {
+      id: v.id,
+      brand: v.brand,
+      model: v.model,
+      year: v.year,
+      km: v.km,
+      transm: v.transm,
+      fuel: v.fuel,
+      price: v.price,
+      fipe: v.fipe,
+      city: v.city,
+      state: v.state,
+      coverPhoto: v.photos[0] ?? null,
+    };
+  }
+
   async detail(user: SafeUser, id: string): Promise<VehicleDetailResponse> {
     const v = await this.prisma.vehicle.findFirst({
       where: { id, deletedAt: null, listing: { is: { status: "ACTIVE" } } },
