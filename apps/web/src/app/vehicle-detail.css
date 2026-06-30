@@ -885,3 +885,38 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+
+/* Botao Compartilhar anuncio (header do detalhe) */
+.dt-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.dt-head-main {
+  min-width: 0;
+}
+.dt-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--surface, #fff);
+  color: var(--text, #0b1220);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.dt-share:hover {
+  background: var(--muted-t, #f1f5f9);
+  border-color: var(--muted, #cbd5e1);
+}
+.dt-share:active {
+  transform: translateY(1px);
+}

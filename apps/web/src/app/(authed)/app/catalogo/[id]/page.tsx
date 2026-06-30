@@ -26,6 +26,7 @@ import {
   MapPin,
   Palette,
   Phone,
+  Share2,
   ShieldCheck,
   Sparkles,
   Star,
@@ -55,32 +56,32 @@ const num = (n: number) => n.toLocaleString("pt-BR");
  * ao lojista. Inclui os dados principais do veiculo + link do anuncio.
  */
 function buildContactMessage(v: VehicleDetail): string {
-  const L = "\u2501".repeat(12);
+  const L = "━".repeat(12);
   const desconto = v.fipe > v.price ? Math.round((1 - v.price / v.fipe) * 100) : 0;
   const linhas = [
-    "\uD83D\uDE97 *RadarAuto*",
+    "🚗 *RadarAuto*",
     L,
     `*${v.brand} ${v.model} ${v.year}*`,
     L,
-    `\uD83D\uDCCD ${v.city}/${v.state}`,
-    `\u2699\uFE0F ${v.transm} \u00B7 ${v.fuel}`,
-    `\uD83D\uDEE3\uFE0F ${num(v.km)} km`,
+    `📍 ${v.city}/${v.state}`,
+    `⚙️ ${v.transm} · ${v.fuel}`,
+    `🛣️ ${num(v.km)} km`,
   ];
   if (v.fipe > 0) {
-    linhas.push(L, `\uD83D\uDCB0 FIPE: R$ ${brl(v.fipe)}`);
+    linhas.push(L, `💰 FIPE: R$ ${brl(v.fipe)}`);
     linhas.push(
       desconto > 0
-        ? `\u2705 *Por: R$ ${brl(v.price)}* (-${desconto}%)`
-        : `\u2705 *Por: R$ ${brl(v.price)}*`,
+        ? `✅ *Por: R$ ${brl(v.price)}* (-${desconto}%)`
+        : `✅ *Por: R$ ${brl(v.price)}*`,
     );
   } else {
-    linhas.push(L, `\u2705 *R$ ${brl(v.price)}*`);
+    linhas.push(L, `✅ *R$ ${brl(v.price)}*`);
   }
   linhas.push(
     L,
     "Tenho interesse neste ve\u00EDculo! Ainda est\u00E1 dispon\u00EDvel?",
     "",
-    `\uD83D\uDD17 https://www.radarauto.app/v/${v.id}`,
+    `🔗 https://www.radarauto.app/v/${v.id}`,
   );
   return linhas.join("\n");
 }
@@ -150,6 +151,29 @@ export default function VehicleDetailPage() {
 
   const goPlans = useCallback(() => router.push("/app/planos"), [router]);
 
+  const [copied, setCopied] = useState(false);
+  const handleShare = useCallback(async () => {
+    if (!v) return;
+    const msg = buildContactMessage(v);
+    // Celular: menu de compartilhamento nativo. Desktop: copia (lojista no web
+    // cola direto no WhatsApp web).
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ text: msg });
+        return;
+      } catch {
+        // usuario cancelou ou share falhou -> cai pro copiar
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(msg);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ambiente sem clipboard: ignora silenciosamente
+    }
+  }, [v]);
+
   if (loading) {
     return (
       <div className="page-wrap">
@@ -185,10 +209,21 @@ export default function VehicleDetailPage() {
 
       {/* Header */}
       <div className="dt-head">
-        <h1 className="dt-title">
-          {v.brand} {v.model}
-        </h1>
-        <div className="dt-version">{v.version}</div>
+        <div className="dt-head-main">
+          <h1 className="dt-title">
+            {v.brand} {v.model}
+          </h1>
+          <div className="dt-version">{v.version}</div>
+        </div>
+        <button
+          type="button"
+          className="dt-share"
+          onClick={handleShare}
+          aria-label="Compartilhar anúncio"
+        >
+          {copied ? <Check size={16} /> : <Share2 size={16} />}
+          {copied ? "Copiado!" : "Compartilhar"}
+        </button>
       </div>
 
       {/* Faixa hero: galeria 4:3 + card (mesma altura) */}
