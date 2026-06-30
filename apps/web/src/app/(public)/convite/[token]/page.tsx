@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import type { InviteInfoResponse } from "@radar/types";
-import { Brand, Button, FormField, Input, PasswordInput, Skeleton } from "@radar/ui";
+import { BrandLogo, Button, FormField, Input, PasswordInput, Skeleton } from "@radar/ui";
 
 import { toFriendlyError } from "@/lib/error-messages";
 import { employeesApi } from "@/lib/employees-api";
@@ -83,7 +83,7 @@ export default function ConvitePage(): JSX.Element {
     <div className="convite-wrap">
       <div className="convite-card">
         <div className="convite-brand">
-          <Brand size="md" />
+          <BrandLogo height={32} />
         </div>
 
         {loading && (
