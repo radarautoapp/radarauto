@@ -341,6 +341,17 @@ export class AuthService {
   }
 
   private async createSessionAndIssueToken(user: User, ctx: AuthContext): Promise<AuthResult> {
+    // Sessao unica para todos os papeis, exceto lojista (dono da conta pode usar
+    // em varios dispositivos). Ao logar, revoga as sessoes ativas anteriores; como
+    // o JwtStrategy e o refresh validam revokedAt a cada chamada, o dispositivo
+    // antigo cai na proxima requisicao.
+    if (user.role !== "lojista") {
+      await this.prisma.session.updateMany({
+        where: { userId: user.id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+    }
+
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + this.sessionTtlDays);
 
