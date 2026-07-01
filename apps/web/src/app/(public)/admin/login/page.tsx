@@ -1,34 +1,28 @@
 /**
- * /login page
+ * /admin/login page
  *
- * Refeita usando @radar/ui components (Regra 2: design first com protótipo validado).
- * Visual matching: card centralizado, fundo radial sutil, brand mark, tipografia Sora,
- * inputs com .inp do design system, botão primary com sombra.
- *
- * Sem lógica de negócio aqui — só chama authApi.login (Regras 5, 6).
+ * Login exclusivo para administradores da plataforma (nao e para
+ * lojistas/revendedores - esses usam /login). Mesmo backend de autenticacao;
+ * so a porta de entrada e visual sao dedicados. Bloqueia (e desloga na hora)
+ * quem nao for role "admin".
  */
 "use client";
 
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { BrandLogo, Button, FormField, Input, PasswordInput } from "@radar/ui";
+import { Button, FormField, Input, PasswordInput } from "@radar/ui";
 
-import { ApiClientError } from "@/lib/api";
 import { toFriendlyError } from "@/lib/error-messages";
 import { authApi } from "@/lib/auth-api";
+import { tokenStorage } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth.store";
 
-export default function LoginPage(): JSX.Element {
-  const [expired, setExpired] = useState(false);
-  useEffect(() => {
-    setExpired(new URLSearchParams(window.location.search).get("expired") === "1");
-  }, []);
-  const expiredNotice = expired ? "Sessão expirada. Faça login de novo." : null;
-
+export default function AdminLoginPage(): JSX.Element {
   const router = useRouter();
   const setSession = useAuthStore((s) => s.setSession);
+  const clearSession = useAuthStore((s) => s.clearSession);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,16 +36,16 @@ export default function LoginPage(): JSX.Element {
       const deviceLabel = navigator.userAgent.split(" ").slice(-1)[0] ?? "Browser";
       const res = await authApi.login({ email, password, deviceLabel });
 
-      if (res.user.role === "admin") {
-        // Admin nao entra por aqui: usa /admin/login (porta dedicada).
+      if (res.user.role !== "admin") {
+        // Nao e admin: nao persiste sessao nenhuma nessa porta.
         tokenStorage.clear();
         clearSession();
-        setError("Administradores devem entrar por /admin/login.");
+        setError("Este acesso é exclusivo para administradores.");
         return;
       }
 
       setSession(res.user, res.sessionId);
-      router.push("/app");
+      router.push("/app/admin/dashboard");
     } catch (err) {
       setError(toFriendlyError(err));
     } finally {
@@ -62,8 +56,12 @@ export default function LoginPage(): JSX.Element {
   return (
     <main className="auth-shell">
       <div className="auth-card">
-        <div className="auth-logo-center">
-          <BrandLogo />
+        <div
+          className="auth-logo-center"
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
+        >
+          <ShieldCheck size={32} />
+          <span style={{ fontWeight: 700, fontSize: 15 }}>Painel Administrativo</span>
         </div>
 
         <form className="auth-form" onSubmit={onSubmit} noValidate>
@@ -76,7 +74,7 @@ export default function LoginPage(): JSX.Element {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
-              placeholder="seu@email.com"
+              placeholder="admin@radarauto.app"
             />
           </FormField>
 
@@ -109,10 +107,6 @@ export default function LoginPage(): JSX.Element {
             {loading ? "Entrando..." : "Entrar"}
           </Button>
         </form>
-
-        <div className="auth-foot">
-          Não tem conta? <a href="/cadastro">Criar agora</a>
-        </div>
       </div>
     </main>
   );

@@ -55,6 +55,23 @@ export class VehiclesService {
     @Inject(STORAGE_SERVICE) private readonly storage: IStorageService,
   ) {}
 
+  /**
+   * Exige que a loja esteja aprovada para vender (sellingStatus === APPROVED).
+   * Loja nova comeca como NONE; pede aprovacao via POST /stores/me/request-selling.
+   */
+  private async assertCanSell(storeId: string): Promise<void> {
+    const store = await this.prisma.store.findUnique({
+      where: { id: storeId },
+      select: { sellingStatus: true },
+    });
+    if (!store || store.sellingStatus !== "APPROVED") {
+      throw new ForbiddenException({
+        code: "SELLING_NOT_APPROVED",
+        message: "Sua loja ainda não está aprovada para vender veículos.",
+      });
+    }
+  }
+
   async create(user: SafeUser, dto: CreateVehicleDto, photos: UploadedPhoto[]) {
     if (!user.storeId) {
       throw new ForbiddenException({
@@ -62,6 +79,7 @@ export class VehiclesService {
         message: "Você precisa ter uma loja para cadastrar veículos.",
       });
     }
+    await this.assertCanSell(user.storeId);
 
     if (!photos || photos.length === 0) {
       throw new BadRequestException({
@@ -381,6 +399,7 @@ export class VehiclesService {
         message: "Você não tem permissão para editar este veículo.",
       });
     }
+    await this.assertCanSell(user.storeId!);
 
     // Monta o array final de fotos a partir do photoOrder.
     const currentUrls = new Set(existing.photos);

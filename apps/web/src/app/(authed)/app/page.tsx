@@ -24,12 +24,15 @@ export default function AppRedirectPage(): JSX.Element {
 
   useEffect(() => {
     if (!user) return;
+    // Admin nao opera loja: vai direto pra gestao de lojistas.
     // Lojista e revendedor entram pelo Catálogo (vitrine do mercado);
-    // funcionário e admin vão para Meus Veículos (gestão da loja).
+    // funcionário vai para Meus Veículos (gestão da loja).
     const target =
-      user.role === "lojista" || user.role === "revendedor"
-        ? "/app/catalogo"
-        : "/app/meus-veiculos";
+      user.role === "admin"
+        ? "/app/admin/dashboard"
+        : user.role === "lojista" || user.role === "revendedor"
+          ? "/app/catalogo"
+          : "/app/meus-veiculos";
     router.replace(target);
   }, [user, router]);
 

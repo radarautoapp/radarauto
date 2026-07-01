@@ -49,3 +49,46 @@ export interface UploadStoreLogoResponse {
 export interface RemoveStoreLogoResponse {
   store: PublicStore;
 }
+
+export interface AdminStoreItem {
+  id: string;
+  name: string;
+  cnpj: string;
+  city: string;
+  state: string;
+  sellingStatus: "NONE" | "PENDING" | "APPROVED";
+  createdAt: string;
+  ownerEmail: string | null;
+  ownerName: string | null;
+  logoUrl: string | null;
+}
+
+export interface ListStoresForAdminResponse {
+  stores: AdminStoreItem[];
+}
+
+export interface SetSellingStatusRequest {
+  approved: boolean;
+}
+
+export interface AdminOverview {
+  storesTotal: number;
+  storesApproved: number;
+  storesPending: number;
+  vehiclesActive: number;
+  vehiclesNew7d: number;
+  buyersTotal: number;
+  buyersNew7d: number;
+  leadsTotal: number;
+  leadsNew7d: number;
+  soldTotal: number;
+  soldThisMonth: number;
+  avgDiscountPercent: number | null;
+  growth: Array<{ date: string; stores: number; vehicles: number; leads: number }>;
+  topStores: Array<{ id: string; name: string; activeVehicles: number }>;
+  byState: Array<{ state: string; stores: number; vehicles: number }>;
+  leadFunnel: { hot: number; warm: number; cold: number };
+  mrrEstimateCents: number;
+  activeSubscribers: number;
+  mrrTrend: Array<{ weekStart: string; newSubscribers: number }>;
+}

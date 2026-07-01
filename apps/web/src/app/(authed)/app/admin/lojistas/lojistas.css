@@ -1,0 +1,93 @@
+/* ============================================================
+   Tela de Admin — Lojistas (aprovacao de venda)
+   ============================================================ */
+
+.admin-search-wrap {
+  margin-bottom: 20px;
+}
+
+.admin-stores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.store-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 18px;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--r, 16px);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+.store-card:hover {
+  border-color: var(--primary, #2563eb);
+  transform: translateY(-1px);
+}
+
+.store-card-info {
+  flex: 1;
+  min-width: 0;
+}
+.store-card-name {
+  font-family: var(--display, "Sora");
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text, #0f172a);
+  letter-spacing: -0.01em;
+}
+.store-card-city {
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--muted, #64748b);
+}
+.store-card-meta {
+  font-size: 12.5px;
+  color: var(--muted, #64748b);
+  margin-top: 3px;
+}
+.store-card-owner {
+  font-size: 12.5px;
+  color: var(--muted, #64748b);
+  margin-top: 3px;
+}
+
+.store-card-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.store-card-toggle-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 640px) {
+  .store-card {
+    flex-wrap: wrap;
+  }
+  .store-card-info {
+    width: calc(100% - 55px);
+  }
+  .store-card-toggle {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--bg-2, #eef2f6);
+  }
+}

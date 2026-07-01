@@ -7,6 +7,7 @@
  * Mantém Single source of truth (Regra 13).
  */
 import {
+  Building2,
   Car,
   Crown,
   Eye,
@@ -35,13 +36,25 @@ export const NAV_ITEMS: Record<string, NavConfigItem> = {
   team: { id: "team", label: "Funcionários", icon: Users, href: "/app/funcionarios" },
   plans: { id: "plans", label: "Planos", icon: Crown, href: "/app/planos" },
   settings: { id: "settings", label: "Configuração", icon: Settings, href: "/app/configuracao" },
+  adminDashboard: {
+    id: "adminDashboard",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/app/admin/dashboard",
+  },
+  adminStores: {
+    id: "adminStores",
+    label: "Lojistas",
+    icon: Building2,
+    href: "/app/admin/lojistas",
+  },
 };
 
 export const NAV_BY_ROLE: Record<UserRole, string[]> = {
   lojista: ["vehicles", "mine", "leads", "team", "plans", "settings"],
   funcionario: ["vehicles", "mine", "leads"],
   revendedor: ["vehicles", "plans"],
-  admin: ["vehicles", "mine", "leads", "team", "plans", "settings"],
+  admin: ["adminDashboard", "adminStores"],
 };
 
 export const ROLE_META: Record<

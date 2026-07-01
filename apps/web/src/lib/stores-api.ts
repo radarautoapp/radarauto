@@ -2,8 +2,11 @@
  * lib/stores-api.ts
  */
 import type {
+  AdminOverview,
   GetMyStoreResponse,
+  ListStoresForAdminResponse,
   RemoveStoreLogoResponse,
+  SetSellingStatusRequest,
   UpdateStoreRequest,
   UpdateStoreResponse,
   UploadStoreLogoResponse,
@@ -60,5 +63,24 @@ export const storesApi = {
 
   async removeLogo(): Promise<RemoveStoreLogoResponse> {
     return apiFetch<RemoveStoreLogoResponse>("/stores/me/logo", { method: "DELETE" });
+  },
+
+  /** [ADMIN] Lista todas as lojas com o lojista dono. */
+  async listAllForAdmin(): Promise<ListStoresForAdminResponse> {
+    return apiFetch<ListStoresForAdminResponse>("/stores/admin/all", { method: "GET" });
+  },
+
+  /** [ADMIN] Aprova ou revoga a permissao de venda de uma loja. */
+  async setSellingStatus(storeId: string, approved: boolean): Promise<GetMyStoreResponse> {
+    const body: SetSellingStatusRequest = { approved };
+    return apiFetch<GetMyStoreResponse>(`/stores/admin/${storeId}/selling-status`, {
+      method: "PATCH",
+      body,
+    });
+  },
+
+  /** [ADMIN] Metricas gerais da plataforma. */
+  async getOverview(): Promise<AdminOverview> {
+    return apiFetch<AdminOverview>("/stores/admin/overview", { method: "GET" });
   },
 };

@@ -33,6 +33,12 @@ enum SubscriptionCycle {
   yearly
 }
 
+enum StoreSellingStatus {
+  NONE
+  PENDING
+  APPROVED
+}
+
 enum ListingStatus {
   DRAFT
   PENDING
@@ -150,6 +156,7 @@ model Store {
   rating      Float    @default(0)
   reviews     Int      @default(0)
   verified    Boolean  @default(false)
+  sellingStatus StoreSellingStatus @default(NONE)
   description String?  @db.Text
   logoUrl     String?
 
