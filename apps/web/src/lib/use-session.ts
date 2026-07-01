@@ -17,7 +17,7 @@ import { authApi } from "@/lib/auth-api";
 import { useAuthStore } from "@/stores/auth.store";
 
 export function useSession() {
-  const { user, setSession, clearSession, markHydrated, isHydrated } = useAuthStore();
+  const { user: storedUser, setSession, clearSession, markHydrated, isHydrated } = useAuthStore();
 
   const query = useQuery({
     queryKey: ["auth", "me"],
@@ -45,9 +45,17 @@ export function useSession() {
     }
   }, [query.data, query.isError, query.error, setSession, clearSession]);
 
+  // Usa o resultado da query assim que ele chega, no MESMO render (nao espera
+  // o proximo ciclo, quando o efeito acima ainda vai popular o Zustand).
+  // Sem isso, existe uma janela onde isLoading ja virou false mas o Zustand
+  // ainda esta vazio -> useAuthGuard interpreta como "nao autenticado" e
+  // redireciona pro login indevidamente (ex: apos reload completo vindo do
+  // link de compartilhamento /v/[id], mesmo com sessao valida).
+  const effectiveUser = query.data?.user ?? storedUser;
+
   return {
-    user,
-    isAuthenticated: !!user,
+    user: effectiveUser,
+    isAuthenticated: !!effectiveUser,
     isLoading: query.isLoading && !!tokenStorage.get(),
   };
 }

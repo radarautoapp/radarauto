@@ -77,6 +77,9 @@ function buildContactMessage(v: VehicleDetail): string {
   } else {
     linhas.push(L, `✅ *R$ ${brl(v.price)}*`);
   }
+  if (v.obs && v.obs.trim().length > 0) {
+    linhas.push(L, `📝 ${v.obs.trim()}`);
+  }
   linhas.push(
     L,
     "Tenho interesse neste ve\u00EDculo! Ainda est\u00E1 dispon\u00EDvel?",
