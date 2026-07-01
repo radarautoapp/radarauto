@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import type { ComponentType } from "react";
 
-import type { UserRole } from "@radar/types";
+import type { StoreSellingStatus, UserRole } from "@radar/types";
 
 export interface NavConfigItem {
   id: string;
@@ -76,8 +76,24 @@ export const SUB_ROUTES: { prefix: string; parentId: string; title: string }[] =
   { prefix: "/app/catalogo", parentId: "vehicles", title: "Detalhes do Veículo" },
 ];
 
-export function navForRole(role: UserRole): NavConfigItem[] {
-  return NAV_BY_ROLE[role].map((id) => NAV_ITEMS[id]).filter((x): x is NavConfigItem => !!x);
+/**
+ * Enquanto a loja nao esta aprovada para vender (sellingStatus !== APPROVED),
+ * lojista e funcionario navegam com um menu reduzido (sem as telas de venda:
+ * Meus veiculos, Visualizacoes, Funcionarios). Aprovacao e feita pelo admin
+ * (ver stores.service.setSellingStatus) — nao ha mais autoatendimento.
+ */
+const REDUCED_NAV: Partial<Record<UserRole, string[]>> = {
+  lojista: ["vehicles", "plans", "settings"],
+  funcionario: ["vehicles"],
+};
+
+export function navForRole(role: UserRole, sellingStatus?: StoreSellingStatus): NavConfigItem[] {
+  const needsApproval =
+    (role === "lojista" || role === "funcionario") &&
+    !!sellingStatus &&
+    sellingStatus !== "APPROVED";
+  const ids = needsApproval ? (REDUCED_NAV[role] ?? NAV_BY_ROLE[role]) : NAV_BY_ROLE[role];
+  return ids.map((id) => NAV_ITEMS[id]).filter((x): x is NavConfigItem => !!x);
 }
 
 export function initialsFromName(name: string): string {

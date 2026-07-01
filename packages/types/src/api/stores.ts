@@ -18,6 +18,7 @@ export interface PublicStore {
   rating: number;
   reviews: number;
   verified: boolean;
+  sellingStatus: StoreSellingStatus;
   description: string | null;
   logoUrl: string | null;
   createdAt: string;

@@ -42,9 +42,14 @@ export default function AuthedLayout({
   }, [pathname]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
-  const [store, setStore] = useState<{ name: string; logoUrl: string | null } | null>(null);
+  const [store, setStore] = useState<{
+    name: string;
+    logoUrl: string | null;
+    sellingStatus: "NONE" | "PENDING" | "APPROVED" | null;
+  } | null>(null);
 
-  // Lojista e funcionário exibem o nome/logo da loja no rodapé da sidebar.
+  // Lojista e funcionário exibem o nome/logo da loja no rodapé da sidebar, e
+  // usam o sellingStatus dela pra decidir o menu (ver navForRole).
   const hasStore = !!user?.storeId && (user.role === "lojista" || user.role === "funcionario");
   useEffect(() => {
     if (!hasStore) {
@@ -55,7 +60,12 @@ export default function AuthedLayout({
     storesApi
       .getMine()
       .then((res) => {
-        if (active) setStore({ name: res.store.name, logoUrl: res.store.logoUrl ?? null });
+        if (active)
+          setStore({
+            name: res.store.name,
+            logoUrl: res.store.logoUrl ?? null,
+            sellingStatus: res.store.sellingStatus ?? null,
+          });
       })
       .catch(() => {
         if (active) setStore(null);
@@ -65,7 +75,10 @@ export default function AuthedLayout({
     };
   }, [hasStore]);
 
-  const navItems = useMemo(() => (user ? navForRole(user.role) : []), [user]);
+  const navItems = useMemo(
+    () => (user ? navForRole(user.role, store?.sellingStatus ?? undefined) : []),
+    [user, store?.sellingStatus],
+  );
 
   const activeId = useMemo(() => {
     if (!pathname) return undefined;
